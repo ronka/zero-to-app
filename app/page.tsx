@@ -1,5 +1,7 @@
 import Image from "next/image";
 
+import { GROW_PAYMENT_URL } from "@/lib/grow/products";
+
 const integrations = [
   { name: "better-auth", label: "אימות משתמשים", color: "#c7ff4a" },
   { name: "Neon", label: "Postgres בענן", color: "#6dd8ff" },
@@ -10,10 +12,10 @@ const integrations = [
 ];
 
 const steps = [
-  ["01", "בוחרים בסיס", "אפליקציית Expo או אתר Next.js — לפי המוצר שאתם בונים."],
-  ["02", "משכפלים", "מקבלים repo מסודר, עם ארכיטקטורה והגדרות שכבר עובדות יחד."],
-  ["03", "מגדירים", "מחברים מפתחות API, צבעים, דומיין ושם. בלי שבוע של plumbing."],
-  ["04", "משיקים", "מוסיפים את הפיצ׳ר הייחודי שלכם ועולים לאוויר."],
+  ["01", "בוחרים repo", "משכפלים את גרסת ה־Next.js ל־Web או את גרסת ה־Expo ל־Mobile."],
+  ["02", "מריצים /setup", "ה־Skill שואל כמה שאלות קצרות ומבין איזה מוצר אתם בונים."],
+  ["03", "ה־AI מגדיר", "שם, שפה ו־locale, דאטה ואנליטיקה — מחוברים בדיוק לצרכים שלכם."],
+  ["04", "בונים ומשיקים", "מתחילים מבסיס מושלם, מוסיפים את מה שמיוחד במוצר ועולים לאוויר."],
 ];
 
 function ArrowIcon() {
@@ -58,8 +60,8 @@ export default function Home() {
             <a className="transition hover:text-[var(--lime)]" href="#how">איך זה עובד</a>
             <a className="transition hover:text-[var(--lime)]" href="#about">מי אני</a>
           </nav>
-          <a href="#access" className="rounded-full border border-[var(--line)] bg-white/5 px-5 py-2.5 text-sm font-bold transition hover:border-[var(--lime)] hover:text-[var(--lime)]">
-            אני רוצה להשיק
+          <a href={GROW_PAYMENT_URL} target="_blank" rel="noreferrer" className="rounded-full border border-[var(--line)] bg-white/5 px-5 py-2.5 text-sm font-bold transition hover:border-[var(--lime)] hover:text-[var(--lime)]">
+            לרכישה — ₪590
           </a>
         </div>
       </header>
@@ -71,14 +73,14 @@ export default function Home() {
           <div>
             <div className="mb-8 inline-flex rotate-[-1deg] items-center gap-2 rounded-md bg-[var(--paper)] px-4 py-2 text-sm font-bold text-[var(--ink)] shadow-[5px_5px_0_var(--coral)]">
               <span className="h-2 w-2 animate-pulse rounded-full bg-[#149646]" />
-              ה־starter הראשון שבנוי באמת ל־RTL
+              תבנית AI-first ל־Web ול־Mobile
             </div>
             <h1 className="max-w-4xl text-[clamp(3.7rem,8vw,7.6rem)] font-black leading-[.84] tracking-[-0.065em]">
-              מרעיון למוצר
-              <span className="mt-4 block text-[var(--lime)]">בימים. לא בשבועות.</span>
+              לא רק Starter.
+              <span className="mt-4 block text-[var(--lime)]"><strong className="font-black [font-weight:950] [-webkit-text-stroke:.5px_currentColor]">שותף AI</strong> להתחלה.</span>
             </h1>
             <p className="mt-9 max-w-2xl text-lg leading-8 text-zinc-300 md:text-xl md:leading-9">
-              כל מה שצריך כדי להרים מוצר ישראלי אמיתי — Web או Mobile — כבר מחובר, מוגדר ומדבר עברית. אתם מביאים את הרעיון. התבנית דואגת לכל השאר.
+              שתי תבניות, שני repos — אחת ל־Next.js ואחת ל־Expo. משכפלים את מה שמתאים, מריצים <span className="rounded bg-white/10 px-2 py-1 font-mono text-[.9em] text-[var(--lime)]" dir="ltr">/setup</span>, וה־AI בונה לכם בסיס מדויק עם דאטה, אנליטיקה ושפה שכבר עובדים יחד.
             </p>
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
               <a href="#access" className="group inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[var(--lime)] px-7 text-base font-black text-[var(--ink)] shadow-[0_0_35px_rgba(199,255,74,.2)] transition hover:-translate-y-1 hover:shadow-[0_8px_0_#617d1e]">
@@ -90,41 +92,42 @@ export default function Home() {
               </a>
             </div>
             <div className="mt-9 flex flex-wrap gap-x-6 gap-y-3 text-sm text-zinc-400">
-              <span className="flex items-center gap-2 text-[var(--lime)]"><CheckIcon /><b className="text-zinc-300">Next.js + Expo</b></span>
-              <span className="flex items-center gap-2 text-[var(--lime)]"><CheckIcon /><b className="text-zinc-300">RTL מהשורש</b></span>
-              <span className="flex items-center gap-2 text-[var(--lime)]"><CheckIcon /><b className="text-zinc-300">Skills לסוכן AI</b></span>
+              <span className="flex items-center gap-2 text-[var(--lime)]"><CheckIcon /><b className="text-zinc-300">2 repos לבחירה</b></span>
+              <span className="flex items-center gap-2 text-[var(--lime)]"><CheckIcon /><b className="text-zinc-300">Setup מונחה AI</b></span>
+              <span className="flex items-center gap-2 text-[var(--lime)]"><CheckIcon /><b className="text-zinc-300">קל להרחבה</b></span>
             </div>
           </div>
 
           <div className="relative mx-auto w-full max-w-xl lg:ms-auto">
-            <div className="absolute -left-6 -top-8 z-10 rotate-[-7deg] rounded-full bg-[var(--coral)] px-5 py-3 font-mono text-sm font-black text-white shadow-xl">SHIP IT 🇮🇱</div>
+            <div className="absolute -left-3 -top-8 z-10 rotate-[-7deg] rounded-full bg-[var(--coral)] px-5 py-3 font-mono text-sm font-black text-white shadow-xl md:-left-6">AI-FIRST ⚡</div>
             <div className="overflow-hidden rounded-[28px] border border-zinc-700 bg-[#101210] shadow-[0_30px_100px_rgba(0,0,0,.55)]">
               <div className="flex items-center justify-between border-b border-zinc-800 bg-[#181a18] px-5 py-4" dir="ltr">
                 <div className="flex gap-2"><span className="h-3 w-3 rounded-full bg-[#ff5f57]" /><span className="h-3 w-3 rounded-full bg-[#febc2e]" /><span className="h-3 w-3 rounded-full bg-[#28c840]" /></div>
-                <span className="font-mono text-xs text-zinc-500">zero-to-saas / launch</span>
+                <span className="font-mono text-xs text-zinc-500">zero-to-saas-web — setup</span>
               </div>
-              <div className="space-y-5 p-5 font-mono text-sm md:p-8" dir="ltr">
-                <p className="text-zinc-500">$ npx create-zero-saas my-app</p>
-                <div className="rounded-xl border border-zinc-800 bg-black/30 p-5">
-                  <p className="mb-4 text-zinc-400">Choose your launchpad:</p>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-lg border border-[var(--lime)] bg-[rgba(199,255,74,.07)] p-4 text-[var(--lime)]"><b>▲ Next.js</b><small className="mt-1 block text-zinc-500">web app</small></div>
-                    <div className="rounded-lg border border-zinc-700 p-4 text-white"><b>◉ Expo</b><small className="mt-1 block text-zinc-500">mobile app</small></div>
-                  </div>
+              <div className="min-h-[470px] space-y-3 p-5 font-mono text-[13px] md:p-8 md:text-sm" dir="ltr" role="img" aria-label="Terminal demo: the setup skill asks for an app name and Hebrew language, then configures analytics, database, and locale">
+                <p className="terminal-line terminal-line-1 text-zinc-300"><span className="text-[var(--lime)]">$</span> /setup<span className="terminal-cursor" aria-hidden="true">▋</span></p>
+                <p className="terminal-line terminal-line-2 pt-2 text-[var(--sky)]">◆ Let&apos;s shape your starter.</p>
+                <div className="terminal-line terminal-line-3 rounded-lg border border-zinc-800 bg-black/30 px-4 py-3">
+                  <p className="text-zinc-500">App name?</p>
+                  <p className="mt-1 font-bold text-white">› Lumo</p>
                 </div>
-                <div className="space-y-3 text-zinc-300">
-                  <p><span className="text-[var(--lime)]">✓</span> better-auth configured</p>
-                  <p><span className="text-[var(--lime)]">✓</span> neon database connected</p>
-                  <p><span className="text-[var(--lime)]">✓</span> payments + events ready</p>
-                  <p><span className="text-[var(--lime)]">✓</span> rtl layout enabled</p>
+                <div className="terminal-line terminal-line-4 rounded-lg border border-zinc-800 bg-black/30 px-4 py-3">
+                  <p className="text-zinc-500">Product language?</p>
+                  <p className="mt-1 font-bold text-white" dir="rtl">› אפליקציה בעברית</p>
                 </div>
-                <div className="flex items-center gap-3 rounded-xl bg-[var(--lime)] p-4 font-bold text-[var(--ink)]">
-                  <span className="text-lg">⚡</span>
-                  Ready to build the part that matters.
+                <div className="terminal-line terminal-line-5 grid grid-cols-3 gap-2 py-1 text-center text-[11px] md:text-xs">
+                  <span className="rounded-md border border-[var(--lime)]/30 bg-[rgba(199,255,74,.07)] px-2 py-2 text-[var(--lime)]">analytics ✓</span>
+                  <span className="rounded-md border border-[var(--lime)]/30 bg-[rgba(199,255,74,.07)] px-2 py-2 text-[var(--lime)]">database ✓</span>
+                  <span className="rounded-md border border-[var(--lime)]/30 bg-[rgba(199,255,74,.07)] px-2 py-2 text-[var(--lime)]">he-IL / RTL ✓</span>
+                </div>
+                <div className="terminal-line terminal-line-6 rounded-xl bg-[var(--lime)] p-4 font-bold text-[var(--ink)]">
+                  <div className="flex items-center gap-3"><span className="text-lg">⚡</span><span>Perfect starter generated.</span></div>
+                  <p className="mt-1 pl-8 text-xs font-medium opacity-65">Ready for the part only you can build.</p>
                 </div>
               </div>
             </div>
-            <div className="absolute -bottom-7 right-5 rotate-3 rounded-lg border border-zinc-700 bg-[var(--surface-strong)] px-5 py-3 font-mono text-xs text-[var(--sky)] shadow-xl">deploy.status = &quot;live&quot;</div>
+            <div className="absolute -bottom-7 right-5 rotate-3 rounded-lg border border-zinc-700 bg-[var(--surface-strong)] px-5 py-3 font-mono text-xs text-[var(--sky)] shadow-xl">starter.extendable = true</div>
           </div>
         </div>
       </section>
@@ -139,9 +142,9 @@ export default function Home() {
         <div className="grid gap-8 lg:grid-cols-[.7fr_1.3fr] lg:items-end">
           <div>
             <p className="font-mono text-sm font-bold text-[var(--coral)]">{"// PICK YOUR STACK"}</p>
-            <h2 className="mt-5 text-5xl font-black leading-[.95] tracking-[-.05em] md:text-7xl">בסיס אחד.<br />שתי דרכים להשיק.</h2>
+            <h2 className="mt-5 text-5xl font-black leading-[.95] tracking-[-.05em] md:text-7xl">שני repos.<br />אתם בוחרים.</h2>
           </div>
-          <p className="max-w-2xl text-lg leading-8 text-zinc-400 lg:ms-auto">אותה חשיבה, אותם חיבורים, אותו RTL מדויק. רק בוחרים איפה המוצר שלכם חי ומתחילים מהחלק המעניין.</p>
+          <p className="max-w-2xl text-lg leading-8 text-zinc-400 lg:ms-auto">לא monorepo מסורבל ולא קוד שלא צריך. משכפלים רק את תבנית ה־Web או ה־Mobile, מריצים <span className="font-mono text-[var(--lime)]" dir="ltr">/setup</span> ומתחילים מהחלק המעניין.</p>
         </div>
 
         <div className="mt-16 grid gap-5 lg:grid-cols-2">
@@ -152,8 +155,8 @@ export default function Home() {
               <span className="rounded-full border border-zinc-700 px-3 py-1 font-mono text-xs text-zinc-400">Next.js</span>
             </div>
             <h3 className="mt-20 text-4xl font-black tracking-tight md:text-5xl">אתר SaaS שמוכן למכור</h3>
-            <p className="mt-5 max-w-md text-lg leading-8 text-zinc-400">דפי מוצר, משתמשים, דאטה, מיילים, אנליטיקה ותשלום — מחוברים במבנה שקל להבין ולהרחיב.</p>
-            <div className="mt-9 flex flex-wrap gap-2 text-sm font-bold"><span className="rounded-full bg-white/5 px-3 py-2">App Router</span><span className="rounded-full bg-white/5 px-3 py-2">Server Actions</span><span className="rounded-full bg-white/5 px-3 py-2">SEO</span></div>
+            <p className="mt-5 max-w-md text-lg leading-8 text-zinc-400">דפי מוצר, משתמשים, דאטה, מיילים, אנליטיקה ותשלומים דרך grow.business או Freemius — מחוברים במבנה שקל להבין ולהרחיב.</p>
+            <div className="mt-9 flex flex-wrap gap-2 text-sm font-bold"><span className="rounded-full bg-white/5 px-3 py-2">App Router</span><span className="rounded-full bg-white/5 px-3 py-2">Server Actions</span><span className="rounded-full bg-white/5 px-3 py-2">grow.business</span><span className="rounded-full bg-white/5 px-3 py-2">Freemius</span><span className="rounded-full bg-white/5 px-3 py-2">SEO</span></div>
           </article>
           <article className="group relative overflow-hidden rounded-[30px] border border-[var(--line)] bg-[var(--surface)] p-7 transition hover:border-[var(--sky)] md:p-10">
             <div className="absolute -left-12 -top-12 h-44 w-44 rounded-full bg-[var(--sky)] opacity-[.07] blur-2xl transition group-hover:opacity-15" />
@@ -162,8 +165,8 @@ export default function Home() {
               <span className="rounded-full border border-zinc-700 px-3 py-1 font-mono text-xs text-zinc-400">Expo</span>
             </div>
             <h3 className="mt-20 text-4xl font-black tracking-tight md:text-5xl">אפליקציה שנכנסת לכיס</h3>
-            <p className="mt-5 max-w-md text-lg leading-8 text-zinc-400">בסיס יציב ל־iOS ולאנדרואיד, עם ניווט, משתמשים, דאטה ועיצוב שמרגיש טבעי בעברית מהמסך הראשון.</p>
-            <div className="mt-9 flex flex-wrap gap-2 text-sm font-bold"><span className="rounded-full bg-white/5 px-3 py-2">iOS</span><span className="rounded-full bg-white/5 px-3 py-2">Android</span><span className="rounded-full bg-white/5 px-3 py-2">EAS</span></div>
+            <p className="mt-5 max-w-md text-lg leading-8 text-zinc-400">בסיס יציב ל־iOS ולאנדרואיד, עם ניווט, משתמשים, דאטה, מנויים דרך RevenueCat ועיצוב שמרגיש טבעי בעברית מהמסך הראשון.</p>
+            <div className="mt-9 flex flex-wrap gap-2 text-sm font-bold"><span className="rounded-full bg-white/5 px-3 py-2">iOS</span><span className="rounded-full bg-white/5 px-3 py-2">Android</span><span className="rounded-full bg-white/5 px-3 py-2">EAS</span><span className="rounded-full bg-[rgba(109,216,255,.12)] px-3 py-2 text-[var(--sky)]">RevenueCat</span></div>
           </article>
         </div>
       </section>
@@ -196,12 +199,12 @@ export default function Home() {
           <div>
             <p className="font-mono text-sm font-bold text-[var(--coral)]">{"// AI-NATIVE WORKFLOW"}</p>
             <h2 className="mt-5 text-5xl font-black leading-[.95] tracking-[-.05em] md:text-7xl">לא רק קוד.<br />גם דרך לעבוד.</h2>
-            <p className="mt-7 max-w-xl text-lg leading-8 text-zinc-400">התבנית מגיעה עם Skills מותאמים לסוכן הקוד שלכם. הם מכירים את הארכיטקטורה, את החיבורים ואת כללי המשחק — ועוזרים להוסיף פיצ׳רים ולפרוס בלי לפרק דברים בדרך.</p>
+            <p className="mt-7 max-w-xl text-lg leading-8 text-zinc-400">התבניות נבנו AI-first ומגיעות עם Skills שמכירים את הקוד לעומק. <span className="font-mono text-[var(--lime)]" dir="ltr">/setup</span> הוא הצעד הראשון: הוא שואל על המוצר, מתאים locale, ומחבר את הדאטה והאנליטיקה. משם, ה־Skills עוזרים להרחיב בלי לאבד את המבנה.</p>
             <ul className="mt-9 grid gap-4 text-base font-bold sm:grid-cols-2">
-              <li className="flex items-center gap-3 text-[var(--lime)]"><CheckIcon /><span className="text-zinc-200">הוספת פיצ׳ר חדש</span></li>
-              <li className="flex items-center gap-3 text-[var(--lime)]"><CheckIcon /><span className="text-zinc-200">חיבור שירות נוסף</span></li>
-              <li className="flex items-center gap-3 text-[var(--lime)]"><CheckIcon /><span className="text-zinc-200">Deployment בטוח</span></li>
-              <li className="flex items-center gap-3 text-[var(--lime)]"><CheckIcon /><span className="text-zinc-200">שמירה על הקונבנציות</span></li>
+              <li className="flex items-center gap-3 text-[var(--lime)]"><CheckIcon /><span className="text-zinc-200">Setup בשאלות קצרות</span></li>
+              <li className="flex items-center gap-3 text-[var(--lime)]"><CheckIcon /><span className="text-zinc-200">Database ואנליטיקה</span></li>
+              <li className="flex items-center gap-3 text-[var(--lime)]"><CheckIcon /><span className="text-zinc-200">Locale ו־RTL</span></li>
+              <li className="flex items-center gap-3 text-[var(--lime)]"><CheckIcon /><span className="text-zinc-200">Skills להרחבה בטוחה</span></li>
             </ul>
           </div>
           <div className="rounded-[28px] border border-zinc-700 bg-[var(--surface)] p-4 shadow-2xl">
@@ -270,12 +273,12 @@ export default function Home() {
         <div className="relative mx-auto max-w-5xl px-5 text-center md:px-8">
           <p className="font-mono text-sm font-bold text-[var(--lime)]">{"// READY WHEN YOU ARE"}</p>
           <h2 className="mt-6 text-[clamp(3.5rem,9vw,8rem)] font-black leading-[.83] tracking-[-.065em]">תפסיקו להכין.<br /><span className="text-[var(--lime)]">תתחילו להשיק.</span></h2>
-          <p className="mx-auto mt-8 max-w-2xl text-lg leading-8 text-zinc-400">התבנית נמצאת בהכנה. רוצים לדעת ראשונים כשהגישה נפתחת?</p>
-          <a href="https://www.linkedin.com/in/ron-kantor" target="_blank" rel="noreferrer" className="group mt-10 inline-flex min-h-16 items-center justify-center gap-3 rounded-full bg-[var(--lime)] px-9 text-lg font-black text-[var(--ink)] transition hover:-translate-y-1 hover:shadow-[0_8px_0_#617d1e]">
-            עקבו אחרי העדכונים
+          <p className="mx-auto mt-8 max-w-2xl text-lg leading-8 text-zinc-400">מקבלים את תשתית ה־Web וה־Mobile המוכנה, עם ה־Skills שמחברים הכול יחד.</p>
+          <a href={GROW_PAYMENT_URL} target="_blank" rel="noreferrer" className="group mt-10 inline-flex min-h-16 items-center justify-center gap-3 rounded-full bg-[var(--lime)] px-9 text-lg font-black text-[var(--ink)] transition hover:-translate-y-1 hover:shadow-[0_8px_0_#617d1e]">
+            לרכישה מאובטחת — ₪590
             <span className="transition group-hover:translate-x-1" dir="ltr"><ArrowIcon /></span>
           </a>
-          <p className="mt-5 text-sm text-zinc-600">בלי טופס. בלי ספאם. רק עדכוני השקה.</p>
+          <p className="mt-5 text-sm text-zinc-500">התשלום מתבצע באופן מאובטח דרך grow.business.</p>
         </div>
       </section>
 

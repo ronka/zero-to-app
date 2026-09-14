@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Zero to SaaS — משיקים מוצר בימים, לא בשבועות",
+  title: "Zero to SaaS — תבנית AI-first ל־Web ול־Mobile",
   description:
-    "תבנית starter ישראלית ל־Next.js ול־Expo, עם RTL, אימות, דאטה, תשלומים, מיילים, אנליטיקה ו־Skills מוכנים לסוכן הקוד שלכם.",
+    "שתי תבניות AI-first ל־Next.js ול־Expo. מריצים /setup ומקבלים starter מותאם עם locale, דאטה, אנליטיקה ו־Skills שמוכנים להרחבה.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
