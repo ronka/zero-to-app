@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "skills": {
+    "add-grow-magic-link-access": {
+      "source": "ronka/skills",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": "add-grow-magic-link-access/SKILL.md",
+      "computedHash": "ef6f5c2455a15f9d09440630430a25536d416d07769e0e99d79b08d502880d85"
+    },
+    "grow-business-payments": {
+      "source": "ronka/skills",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": "grow-business-payments/SKILL.md",
+      "computedHash": "9f730bf8762e96794d6d5ac7f6d8c44587713fbf879001314e9901b974f64ae1"
+    }
+  }
+}

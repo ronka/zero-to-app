@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -6,7 +7,14 @@ import { authorizeAccess } from "@/lib/access/authorization";
 import { auth } from "@/lib/auth";
 import { claimEntitlement, findActiveEntitlement } from "@/lib/db";
 
+import { ProductAccess } from "./product-access";
+
 const ENTITLEMENT_KEY = "zero-to-saas";
+
+export const metadata: Metadata = {
+  title: "הגישה שלכם — Zero to SaaS",
+  robots: { index: false, follow: false },
+};
 
 export default async function AccessPage() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -31,29 +39,5 @@ export default async function AccessPage() {
     );
   }
 
-  const resources = [
-    { label: "תבנית Web — Next.js", url: process.env.ACCESS_WEB_REPO_URL },
-    { label: "תבנית Mobile — Expo", url: process.env.ACCESS_MOBILE_REPO_URL },
-  ].filter((resource): resource is { label: string; url: string } => Boolean(resource.url));
-
-  return (
-    <main className="mx-auto min-h-screen max-w-4xl px-5 py-16 md:py-24">
-      <p className="font-mono text-sm font-bold text-[var(--lime)]">{"// ACCESS GRANTED"}</p>
-      <h1 className="mt-4 text-5xl font-black tracking-tight md:text-7xl">הגישה פתוחה.</h1>
-      <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-300">שלום {session.user.name}. ההרשאה משויכת לאימייל המאומת של הרכישה.</p>
-      {resources.length > 0 ? (
-        <div className="mt-10 grid gap-4 md:grid-cols-2">
-          {resources.map((resource) => (
-            <a className="rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-6 text-xl font-black transition hover:border-[var(--lime)]" href={resource.url} key={resource.url} rel="noreferrer" target="_blank">
-              {resource.label} ↗
-            </a>
-          ))}
-        </div>
-      ) : (
-        <div className="mt-10 rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-6 text-zinc-300">
-          הגישה שלכם פעילה. קישורי ההורדה יופיעו כאן לאחר הגדרת כתובות ה־repository בסביבת הייצור.
-        </div>
-      )}
-    </main>
-  );
+  return <ProductAccess userName={session.user.name} />;
 }
