@@ -256,7 +256,7 @@ export async function findActiveEntitlement(email: string, entitlementKey: strin
     `SELECT id, claimed_user_id
      FROM entitlements
      WHERE subject_email = $1 AND entitlement_key = $2 AND revoked_at IS NULL
-     ORDER BY created_at DESC
+     ORDER BY granted_at DESC
      LIMIT 1`,
     [email, entitlementKey],
   );
@@ -271,4 +271,153 @@ export async function claimEntitlement(id: string, userId: string) {
     [id, userId],
   );
   return result.rowCount === 1;
+}
+
+export type GitHubRepositoryGrantState = "provisioning" | "invited" | "active" | "failed" | "revoked";
+
+export type GitHubConnection = {
+  userId: string;
+  githubAccountId: string;
+  githubLogin: string;
+};
+
+export async function upsertGitHubConnection(
+  userId: string,
+  betterAuthAccountId: string,
+  githubAccountId: string,
+  githubLogin: string,
+): Promise<GitHubConnection> {
+  const result = await database.query<{
+    user_id: string;
+    github_account_id: string;
+    github_login: string;
+  }>(
+    `INSERT INTO github_connections (
+       user_id, better_auth_account_id, github_account_id, github_login
+     ) VALUES ($1, $2, $3, $4)
+     ON CONFLICT (user_id) DO UPDATE
+     SET better_auth_account_id = EXCLUDED.better_auth_account_id,
+         github_login = EXCLUDED.github_login,
+         updated_at = now()
+     WHERE github_connections.github_account_id = EXCLUDED.github_account_id
+     RETURNING user_id, github_account_id, github_login`,
+    [userId, betterAuthAccountId, githubAccountId, githubLogin],
+  );
+  const row = result.rows[0];
+  if (!row) throw new Error("A different GitHub account is already connected to this buyer");
+  return {
+    userId: row.user_id,
+    githubAccountId: row.github_account_id,
+    githubLogin: row.github_login,
+  };
+}
+
+export async function findGitHubConnection(userId: string) {
+  const result = await database.query<{
+    user_id: string;
+    github_account_id: string;
+    github_login: string;
+  }>(
+    `SELECT user_id, github_account_id, github_login
+     FROM github_connections
+     WHERE user_id = $1`,
+    [userId],
+  );
+  const row = result.rows[0];
+  return row
+    ? {
+        userId: row.user_id,
+        githubAccountId: row.github_account_id,
+        githubLogin: row.github_login,
+      }
+    : null;
+}
+
+export async function listGitHubRepositoryGrants(entitlementId: string) {
+  const result = await database.query<{
+    repository: string;
+    state: GitHubRepositoryGrantState;
+    invitation_url: string | null;
+    last_error: string | null;
+  }>(
+    `SELECT repository, state, invitation_url, last_error
+     FROM github_repository_grants
+     WHERE entitlement_id = $1
+     ORDER BY repository`,
+    [entitlementId],
+  );
+  return result.rows.map((row) => ({
+    repository: row.repository,
+    state: row.state,
+    invitationUrl: row.invitation_url,
+    lastError: row.last_error,
+  }));
+}
+
+export async function claimGitHubRepositoryGrant(
+  entitlementId: string,
+  connectionUserId: string,
+  repository: string,
+) {
+  const result = await database.query<{
+    id: string;
+    invitation_id: string | null;
+    invitation_url: string | null;
+  }>(
+    `INSERT INTO github_repository_grants (
+       entitlement_id, connection_user_id, repository, permission, state,
+       attempt_count, last_attempt_at
+     ) VALUES ($1, $2, $3, 'pull', 'provisioning', 1, now())
+     ON CONFLICT (entitlement_id, repository) DO UPDATE
+     SET connection_user_id = EXCLUDED.connection_user_id,
+         state = 'provisioning',
+         attempt_count = github_repository_grants.attempt_count + 1,
+         last_attempt_at = now(),
+         last_error = NULL,
+         updated_at = now()
+     WHERE github_repository_grants.state IN ('invited', 'failed')
+        OR (
+          github_repository_grants.state = 'provisioning'
+          AND github_repository_grants.last_attempt_at < now() - interval '10 minutes'
+        )
+     RETURNING id, invitation_id::text, invitation_url`,
+    [entitlementId, connectionUserId, repository],
+  );
+  const row = result.rows[0];
+  return row
+    ? {
+        id: row.id,
+        invitationId: row.invitation_id,
+        invitationUrl: row.invitation_url,
+      }
+    : null;
+}
+
+export async function markGitHubRepositoryGrantSucceeded(
+  id: string,
+  state: "invited" | "active",
+  invitationId: string | null,
+  invitationUrl: string | null,
+) {
+  await database.query(
+    `UPDATE github_repository_grants
+     SET state = $2,
+         invitation_id = $3,
+         invitation_url = $4,
+         granted_at = CASE WHEN $2 = 'active' THEN now() ELSE granted_at END,
+         last_error = NULL,
+         updated_at = now()
+     WHERE id = $1 AND state = 'provisioning'`,
+    [id, state, invitationId, invitationUrl],
+  );
+}
+
+export async function markGitHubRepositoryGrantFailed(id: string, error: unknown) {
+  const message = error instanceof Error ? error.message : String(error);
+  await database.query(
+    `UPDATE github_repository_grants
+     SET state = 'failed', last_error = $2, updated_at = now()
+     WHERE id = $1 AND state = 'provisioning'`,
+    [id, message.slice(0, 500)],
+  );
 }

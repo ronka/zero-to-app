@@ -1,34 +1,14 @@
 import Link from "next/link";
 
+import { ACCESS_REPOSITORIES } from "@/lib/access/repositories";
+
 import { CopyButton } from "./copy-button";
+import { GitHubAccessCard, type RepositoryAccessView } from "./github-access-card";
 
 // Rendered by app/access/page.tsx only after the session and entitlement checks pass.
 
 // TODO: replace with the real support inbox before launch.
 const SUPPORT_EMAIL = "support@example.com";
-
-const repos = [
-  {
-    id: "web",
-    index: "01 / WEB",
-    stack: "Next.js",
-    title: "תבנית ה־Web",
-    description: "אתר SaaS שמוכן למכור: משתמשים, דאטה, מיילים, אנליטיקה ותשלומים דרך grow.business.",
-    url: process.env.ACCESS_WEB_REPO_URL ?? "https://github.com/hightechguide/starter-web",
-    accent: "var(--lime)",
-    tags: ["App Router", "better-auth", "Neon", "PostHog", "grow.business"],
-  },
-  {
-    id: "mobile",
-    index: "02 / MOBILE",
-    stack: "Expo",
-    title: "תבנית ה־Mobile",
-    description: "אפליקציה ל־iOS ולאנדרואיד עם ניווט, משתמשים, דאטה, מנויים ו־RTL מהמסך הראשון.",
-    url: process.env.ACCESS_MOBILE_REPO_URL ?? "https://github.com/hightechguide/starter-mobile",
-    accent: "var(--sky)",
-    tags: ["iOS", "Android", "EAS", "RevenueCat", "RTL"],
-  },
-];
 
 const steps = [
   {
@@ -83,7 +63,16 @@ function CommandLine({ command, label }: { command: string; label: string }) {
   );
 }
 
-export function ProductAccess({ userName }: { userName: string }) {
+type GitHubAccessProps = {
+  configured: boolean;
+  linked: boolean;
+  login: string | null;
+  repositories: RepositoryAccessView[];
+  shouldProvision: boolean;
+  connectionError: boolean;
+};
+
+export function ProductAccess({ userName, githubAccess }: { userName: string; githubAccess: GitHubAccessProps }) {
   return (
     <main dir="rtl" className="flex-1 overflow-hidden bg-[var(--background)] text-[var(--foreground)]">
       <header className="border-b border-[var(--line)]">
@@ -120,11 +109,15 @@ export function ProductAccess({ userName }: { userName: string }) {
         <p className="font-mono text-sm font-bold text-[var(--coral)]">{"// YOUR REPOSITORIES"}</p>
         <h2 id="repos-heading" className="mt-4 text-4xl font-black tracking-[-.04em] md:text-6xl">שני repos. מוכנים לשכפול.</h2>
 
+        <GitHubAccessCard {...githubAccess} />
+
         <div className="mt-12 grid gap-5 lg:grid-cols-2">
-          {repos.map((repo) => {
-            const repoUrl = repo.url.replace(/\.git$/, "").replace(/\/$/, "");
-            const slug = repoUrl.replace(/^https:\/\/github\.com\//, "");
-            const folder = slug.split("/").pop();
+          {ACCESS_REPOSITORIES.map((repo) => {
+            const repoUrl = repo.url;
+            const slug = `${repo.owner}/${repo.repo}`;
+            const folder = repo.repo;
+            const access = githubAccess.repositories.find((item) => item.id === repo.id);
+            const active = access?.state === "active";
             return (
               <article
                 key={repo.id}
@@ -144,32 +137,40 @@ export function ProductAccess({ userName }: { userName: string }) {
                   ))}
                 </div>
 
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                  <a
-                    href={`${repoUrl}/generate`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="group inline-flex min-h-12 items-center justify-center gap-3 rounded-full px-6 text-sm font-black text-[var(--ink)] transition hover:-translate-y-0.5"
-                    style={{ backgroundColor: repo.accent }}
-                  >
-                    Use this template
-                    <span className="transition group-hover:translate-x-1" dir="ltr"><ArrowIcon /></span>
-                  </a>
-                  <a
-                    href={repoUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--line)] px-6 text-sm font-bold transition hover:border-zinc-500"
-                  >
-                    פתיחה ב־GitHub ↗
-                  </a>
-                </div>
+                {active ? (
+                  <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                    <a
+                      href={`${repoUrl}/generate`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="group inline-flex min-h-12 items-center justify-center gap-3 rounded-full px-6 text-sm font-black text-[var(--ink)] transition hover:-translate-y-0.5"
+                      style={{ backgroundColor: repo.accent }}
+                    >
+                      Use this template
+                      <span className="transition group-hover:translate-x-1" dir="ltr"><ArrowIcon /></span>
+                    </a>
+                    <a
+                      href={repoUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--line)] px-6 text-sm font-bold transition hover:border-zinc-500"
+                    >
+                      פתיחה ב־GitHub ↗
+                    </a>
+                  </div>
+                ) : (
+                  <p className="mt-8 rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm font-bold text-zinc-400">
+                    חברו GitHub ואשרו את ההזמנה כדי לפתוח את הקישורים.
+                  </p>
+                )}
 
-                <div className="mt-8 space-y-2 border-t border-[var(--line)] pt-6">
-                  <p className="text-sm font-bold text-zinc-400">או משכפלים ישירות:</p>
-                  <CommandLine command={`git clone ${repoUrl}.git`} label={`העתקת פקודת השכפול של ${repo.title}`} />
-                  <CommandLine command={`cd ${folder} && npm install`} label={`העתקת פקודת ההתקנה של ${repo.title}`} />
-                </div>
+                {active ? (
+                  <div className="mt-8 space-y-2 border-t border-[var(--line)] pt-6">
+                    <p className="text-sm font-bold text-zinc-400">או משכפלים ישירות:</p>
+                    <CommandLine command={`git clone ${repoUrl}.git`} label={`העתקת פקודת השכפול של ${repo.title}`} />
+                    <CommandLine command={`cd ${folder} && npm install`} label={`העתקת פקודת ההתקנה של ${repo.title}`} />
+                  </div>
+                ) : null}
               </article>
             );
           })}

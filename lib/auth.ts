@@ -6,6 +6,25 @@ import { MAGIC_LINK_EXPIRES_IN_SECONDS, sendMagicLinkEmail } from "./email";
 
 export const auth = betterAuth({
   database,
+  account: {
+    encryptOAuthTokens: true,
+    accountLinking: {
+      enabled: true,
+      disableImplicitLinking: true,
+      allowDifferentEmails: true,
+    },
+  },
+  socialProviders:
+    process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET
+      ? {
+          github: {
+            clientId: process.env.GITHUB_CLIENT_ID,
+            clientSecret: process.env.GITHUB_CLIENT_SECRET,
+            disableSignUp: true,
+            disableDefaultScope: true,
+          },
+        }
+      : {},
   plugins: [
     magicLink({
       disableSignUp: false,

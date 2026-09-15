@@ -4,8 +4,18 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { authorizeAccess } from "@/lib/access/authorization";
+import {
+  ACCESS_REPOSITORIES,
+  githubAppConfigured,
+  githubOAuthConfigured,
+} from "@/lib/access/repositories";
 import { auth } from "@/lib/auth";
-import { claimEntitlement, findActiveEntitlement } from "@/lib/db";
+import {
+  claimEntitlement,
+  findActiveEntitlement,
+  findGitHubConnection,
+  listGitHubRepositoryGrants,
+} from "@/lib/db";
 
 import { ProductAccess } from "./product-access";
 
@@ -16,13 +26,19 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function AccessPage() {
-  const session = await auth.api.getSession({ headers: await headers() });
+export default async function AccessPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ github?: string }>;
+}) {
+  const requestHeaders = await headers();
+  const session = await auth.api.getSession({ headers: requestHeaders });
   if (!session?.user) redirect("/login");
   const authorization = await authorizeAccess(session, ENTITLEMENT_KEY, {
     findEntitlement: findActiveEntitlement,
     claim: claimEntitlement,
   });
+  if (authorization.status === "anonymous") redirect("/login");
   if (authorization.status === "unverified") redirect("/auth/error");
 
   if (authorization.status === "denied") {
@@ -39,5 +55,37 @@ export default async function AccessPage() {
     );
   }
 
-  return <ProductAccess userName={session.user.name} />;
+  const [accounts, connection, grants, params] = await Promise.all([
+    auth.api.listUserAccounts({ headers: requestHeaders }),
+    findGitHubConnection(session.user.id),
+    listGitHubRepositoryGrants(authorization.entitlement.id),
+    searchParams,
+  ]);
+  const linked = accounts.some((account) => account.providerId === "github");
+  const grantsByRepository = new Map(grants.map((grant) => [grant.repository, grant]));
+  const repositoryAccess = ACCESS_REPOSITORIES.map((repository) => {
+    const slug = `${repository.owner}/${repository.repo}`;
+    const grant = grantsByRepository.get(slug);
+    return {
+      id: repository.id,
+      title: repository.title,
+      slug,
+      state: grant?.state ?? null,
+      invitationUrl: grant?.invitationUrl ?? null,
+    };
+  });
+
+  return (
+    <ProductAccess
+      userName={session.user.name}
+      githubAccess={{
+        configured: githubOAuthConfigured() && githubAppConfigured(),
+        linked,
+        login: connection?.githubLogin ?? null,
+        repositories: repositoryAccess,
+        shouldProvision: params.github === "connected",
+        connectionError: params.github === "error",
+      }}
+    />
+  );
 }

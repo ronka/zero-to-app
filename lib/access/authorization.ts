@@ -29,5 +29,5 @@ export async function authorizeAccess(
   if (!(await dependencies.claim(entitlement.id, session.user.id))) {
     return { status: "denied" as const };
   }
-  return { status: "granted" as const };
+  return { status: "granted" as const, entitlement: { id: entitlement.id } };
 }
