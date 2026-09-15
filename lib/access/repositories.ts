@@ -11,12 +11,12 @@ export type AccessRepository = {
   tags: string[];
 };
 
-function githubRepository(
+export function githubRepository(
   metadata: Omit<AccessRepository, "url" | "owner" | "repo">,
   configuredUrl: string | undefined,
   fallbackUrl: string,
 ): AccessRepository {
-  const url = (configuredUrl ?? fallbackUrl).replace(/\.git$/, "").replace(/\/$/, "");
+  const url = (configuredUrl?.trim() || fallbackUrl).replace(/\.git$/, "").replace(/\/$/, "");
   const match = /^https:\/\/github\.com\/([^/]+)\/([^/]+)$/.exec(url);
   if (!match) throw new Error(`Invalid GitHub repository URL: ${url}`);
 
