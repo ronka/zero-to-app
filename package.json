@@ -7,7 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "tsx --test tests/*.test.ts"
+    "test": "tsx --test tests/*.test.ts",
+    "templates:clone": "node scripts/clone-starters.mjs",
+    "generate": "npm --prefix templates run generate",
+    "generate:check": "npm --prefix templates run generate:check",
+    "test:templates": "npm --prefix templates test"
   },
   "dependencies": {
     "better-auth": "^1.7.4",

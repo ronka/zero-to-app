@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# starter repos (independent clones, see npm run templates:clone)
+/templates/starter-web/
+/templates/starter-mobile/

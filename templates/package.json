@@ -1,0 +1,10 @@
+{
+  "name": "zero-to-saas-templates",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "node generator/generate.mjs",
+    "generate:check": "node generator/generate.mjs --check",
+    "test": "node --test \"test/**/*.test.mjs\" && npm run generate:check"
+  }
+}

@@ -1,0 +1,257 @@
+#!/usr/bin/env node
+
+{{#mobile}}
+import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
+{{/mobile}}
+{{#web}}
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+{{/web}}
+import { resolve } from "node:path";
+
+const root = process.cwd();
+const configPath = resolve(root, process.argv[2] ?? ".starter-init.json");
+{{#web}}
+
+{{/web}}
+if (!existsSync(configPath)) fail(`Missing initialization config: ${configPath}`);
+
+const config = JSON.parse(readFileSync(configPath, "utf8"));
+{{#mobile}}
+const required = ["productName", "packageName", "description", "slug", "scheme", "iosBundleIdentifier", "androidPackage"];
+{{/mobile}}
+{{#web}}
+const required = ["productName", "packageName", "description"];
+
+{{/web}}
+for (const key of required) {
+  if (typeof config[key] !== "string" || !config[key].trim()) fail(`Expected a non-empty string for ${key}`);
+}
+if (!/^(?:@[a-z0-9][a-z0-9._-]*\/)?[a-z0-9][a-z0-9._-]*$/.test(config.packageName)) fail("packageName must be a valid lowercase npm package name");
+{{#mobile}}
+if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(config.slug)) fail("slug must use lowercase letters, numbers, and single hyphens");
+if (!/^[a-z][a-z0-9+.-]*$/.test(config.scheme)) fail("scheme must be a valid lowercase URI scheme");
+if (![config.iosBundleIdentifier, config.androidPackage].every((value) => /^[a-z][a-z0-9]*(?:\.[a-z][a-z0-9]*)+$/.test(value))) fail("bundle identifiers must use reverse-domain lowercase notation");
+validateBrandColors();
+config.brandColor = config.brandColors.primary;
+{{/mobile}}
+if (!Array.isArray(config.locales) || config.locales.length === 0) fail("locales must contain at least one locale code");
+if (!config.locales.every((locale) => /^[a-z]{2,3}(?:-[A-Z]{2})?$/.test(locale))) fail("locales must contain BCP 47-style codes such as en, he, or en-US");
+{{#mobile}}
+const primaryLanguage = config.locales[0].split("-")[0];
+if (primaryLanguage === "he") config.direction = "rtl";
+{{/mobile}}
+if (!["ltr", "rtl", "auto"].includes(config.direction)) fail("direction must be ltr, rtl, or auto");
+{{#mobile}}
+const defaultIsRTL = config.direction === "rtl";
+const shellLabels = primaryLanguage === "he"
+  ? { home: "בית", settings: "הגדרות", productLocales: "שפות המוצר", layoutDirection: "כיוון הממשק", about: "אודות" }
+  : { home: "Home", settings: "Settings", productLocales: "Product locales", layoutDirection: "Layout direction", about: "About" };
+{{/mobile}}
+{{#web}}
+validateBrandColors();
+{{/web}}
+if (!["none", "neon"].includes(config.database)) fail("database must be none or neon");
+if (!["none", "posthog"].includes(config.analytics)) fail("analytics must be none or posthog");
+if (!["none", "resend"].includes(config.email)) fail("email must be none or resend");
+
+updatePackageFiles();
+{{#mobile}}
+updateExpoConfig();
+writeExpoRuntimeConfig();
+writeRTLDefault();
+{{/mobile}}
+{{#web}}
+updateBrandColors();
+{{/web}}
+writeProductContext();
+writeDesignContext();
+{{#mobile}}
+writeAppShell();
+{{/mobile}}
+{{#web}}
+writeSiteShell();
+{{/web}}
+writeReadme();
+writeMcpConfigs();
+console.log(`Initialized ${config.productName}.`);
+
+function validateBrandColors() {
+  const roles = ["primary", "accent", "background", "surface", "text"];
+  if (!config.brandColors || typeof config.brandColors !== "object") fail("brandColors must define a product palette");
+  for (const role of roles) {
+    if (!/^#[0-9a-fA-F]{6}$/.test(config.brandColors[role] ?? "")) fail(`brandColors.${role} must be a six-digit hex color`);
+  }
+}
+
+function updatePackageFiles() {
+  const packagePath = resolve(root, "package.json");
+  const packageJson = readJson(packagePath);
+  packageJson.name = config.packageName;
+{{#mobile}}
+  delete packageJson.scripts?.["reset-project"];
+{{/mobile}}
+  writeJson(packagePath, packageJson);
+
+  const lockPath = resolve(root, "package-lock.json");
+  if (existsSync(lockPath)) {
+    const lock = readJson(lockPath);
+    lock.name = config.packageName;
+    if (lock.packages?.[""]) lock.packages[""].name = config.packageName;
+    writeJson(lockPath, lock);
+  }
+{{#mobile}}
+  rmSync(resolve(root, "scripts/reset-project.js"), { force: true });
+}
+{{/mobile}}
+
+{{#mobile}}
+function updateExpoConfig() {
+  const appPath = resolve(root, "app.json");
+  const app = readJson(appPath);
+  app.expo.name = config.productName;
+  app.expo.slug = config.slug;
+  app.expo.scheme = config.scheme;
+  app.expo.ios = { ...(app.expo.ios ?? {}), bundleIdentifier: config.iosBundleIdentifier };
+  app.expo.android = { ...(app.expo.android ?? {}), package: config.androidPackage };
+  const splash = app.expo.plugins?.find((plugin) => Array.isArray(plugin) && plugin[0] === "expo-splash-screen");
+  if (splash) splash[1] = { backgroundColor: config.brandColors.background };
+  writeJson(appPath, app);
+}
+
+function writeExpoRuntimeConfig() {
+  const content = `const rtlEnabled = ${defaultIsRTL};\n\nmodule.exports = ({ config }) => ({\n  ...config,\n  plugins: [\n    ...(config.plugins ?? []),\n    [\n      'expo-localization',\n      {\n        supportedLocales: {\n          ios: ${JSON.stringify(config.locales)},\n          android: ${JSON.stringify(config.locales)},\n        },\n        supportsRTL: rtlEnabled,\n        forcesRTL: rtlEnabled,\n      },\n    ],\n  ],\n});\n`;
+  writeFileSync(resolve(root, "app.config.js"), content);
+{{/mobile}}
+{{#web}}
+  const layoutPath = resolve(root, "app/layout.tsx");
+  let layout = readFileSync(layoutPath, "utf8");
+  layout = layout.replace(/export const metadata: Metadata = \{[\s\S]*?\n\};/, `export const metadata: Metadata = {\n  title: ${JSON.stringify(config.productName)},\n  description: ${JSON.stringify(config.description)},\n};`);
+  layout = layout.replace(/lang="[^"]*"/, `lang=${JSON.stringify(config.locales[0])}`);
+  if (!layout.includes("      dir=")) layout = layout.replace(/<html\n      lang=([^\n]+)\n/, `<html\n      lang=$1\n      dir=${JSON.stringify(config.direction)}\n`);
+  writeFileSync(layoutPath, layout);
+{{/web}}
+}
+
+{{#mobile}}
+function writeRTLDefault() {
+  const rtlPath = resolve(root, "src/utils/rtl.ts");
+  let rtl = readFileSync(rtlPath, "utf8");
+  const fallbackPattern = /export const isRTL = isExpoGo \? (?:true|false) : I18nManager\.isRTL;/;
+  if (!fallbackPattern.test(rtl)) fail("src/utils/rtl.ts is missing the Expo Go direction fallback");
+  rtl = rtl.replace(
+    fallbackPattern,
+    `export const isRTL = isExpoGo ? ${defaultIsRTL} : I18nManager.isRTL;`,
+  );
+  writeFileSync(rtlPath, rtl);
+{{/mobile}}
+{{#web}}
+function updateBrandColors() {
+  const cssPath = resolve(root, "app/globals.css");
+  let css = readFileSync(cssPath, "utf8");
+  const replacements = {
+    ink: config.brandColors.background,
+    "ink-soft": config.brandColors.surface,
+    indigo: config.brandColors.primary,
+    lime: config.brandColors.accent,
+    "brand-text": config.brandColors.text,
+  };
+  for (const [token, value] of Object.entries(replacements)) {
+    css = css.replace(new RegExp(`(--${token}:)\\s*#[0-9a-fA-F]{6}`), `$1 ${value}`);
+  }
+  writeFileSync(cssPath, css);
+{{/web}}
+}
+
+function writeProductContext() {
+{{#mobile}}
+  const content = `# ${config.productName}\n\n${config.description}\n\n## Product settings\n\n- Product locales: ${config.locales.join(", ")}\n- Layout direction: ${config.direction}\n- Brand color: ${config.brandColor}\n\n## App identity\n\n- Expo slug: ${config.slug}\n- URI scheme: ${config.scheme}\n- iOS bundle identifier: ${config.iosBundleIdentifier}\n- Android package: ${config.androidPackage}\n\n## Integrations\n\n- Database: ${config.database === "neon" ? "Neon" : "Not selected"}\n- Analytics: ${config.analytics === "posthog" ? "PostHog" : "Not selected"}\n- Email: ${config.email === "resend" ? "Resend" : "Not selected"}\n\nAdd product scope and terminology here as the product develops. Agents should read this file before making product decisions.\n`;
+{{/mobile}}
+{{#web}}
+  const content = `# ${config.productName}\n\n${config.description}\n\n## Product settings\n\n- Product locales: ${config.locales.join(", ")}\n- Layout direction: ${config.direction}\n\n## Integrations\n\n- Database: ${config.database === "neon" ? "Neon" : "Not selected"}\n- Analytics: ${config.analytics === "posthog" ? "PostHog" : "Not selected"}\n- Email: ${config.email === "resend" ? "Resend" : "Not selected"}\n\nAdd product scope and terminology here as the product develops. Agents should read this file before making product decisions.\n`;
+{{/web}}
+  writeFileSync(resolve(root, "PRODUCT.md"), content);
+{{#mobile}}
+
+  const productTs = `export const PRODUCT = ${JSON.stringify({ name: config.productName, description: config.description, locales: config.locales, direction: config.direction, brandColors: config.brandColors }, null, 2)} as const;\n`;
+  writeFileSync(resolve(root, "src/constants/product.ts"), productTs);
+{{/mobile}}
+}
+
+function writeDesignContext() {
+  const colors = config.brandColors;
+{{#mobile}}
+  const content = `# ${config.productName} design\n\n## Brand colors\n\n| Role | Hex | Use |\n| --- | --- | --- |\n| Primary | ${colors.primary} | Brand actions, emphasis, and active states |\n| Accent | ${colors.accent} | Highlights and secondary emphasis |\n| Background | ${colors.background} | Branded screens and launch surfaces |\n| Surface | ${colors.surface} | Cards and elevated components |\n| Text | ${colors.text} | Primary text on the brand background |\n\n## Application\n\n- The implementation source of truth is \`PRODUCT.brandColors\` in \`src/constants/product.ts\`.\n- Use semantic theme colors for standard system surfaces and these brand colors for product identity.\n- Check normal text and interactive controls for WCAG AA contrast after changing any color.\n- Record typography, iconography, spacing, radius, or motion decisions here as the identity develops.\n\nUpdate this file whenever the visual language changes. Agents should read it before making visual or layout decisions.\n`;
+{{/mobile}}
+{{#web}}
+  const content = `# ${config.productName} design\n\n## Brand colors\n\n| Role | Hex | Use |\n| --- | --- | --- |\n| Primary | ${colors.primary} | Brand actions, emphasis, and active states |\n| Accent | ${colors.accent} | Highlights and high-contrast calls to action |\n| Background | ${colors.background} | Main dark canvas |\n| Surface | ${colors.surface} | Cards and elevated dark surfaces |\n| Text | ${colors.text} | Primary text on the brand background |\n\n## Application\n\n- The implementation source of truth is the token block in \`app/globals.css\`.\n- Preserve the landing page's high-contrast section rhythm unless product needs require a different hierarchy.\n- Check normal text and interactive controls for WCAG AA contrast after changing any color.\n- Record typography, imagery, spacing, radius, or motion decisions here as the identity develops.\n\nUpdate this file whenever the visual language changes. Agents should read it before making visual or layout decisions.\n`;
+{{/web}}
+  writeFileSync(resolve(root, "DESIGN.md"), content);
+}
+
+{{#mobile}}
+function writeAppShell() {
+  const oldRoute = resolve(root, "src/app/explore.tsx");
+  const settingsRoute = resolve(root, "src/app/settings.tsx");
+  if (existsSync(oldRoute) && !existsSync(settingsRoute)) renameSync(oldRoute, settingsRoute);
+
+  const index = `import { ScrollView, StyleSheet } from 'react-native';\nimport { SafeAreaView } from 'react-native-safe-area-context';\n\nimport { ThemedText } from '@/components/themed-text';\nimport { ThemedView } from '@/components/themed-view';\nimport { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';\nimport { PRODUCT } from '@/constants/product';\nimport { rtlTextAlign } from '@/utils/rtl';\n\nexport default function HomeScreen() {\n  return (\n    <ThemedView style={styles.screen}>\n      <SafeAreaView style={styles.safeArea}>\n        <ScrollView contentContainerStyle={styles.content}>\n          <ThemedText type="smallBold" style={styles.eyebrow}>{PRODUCT.name}</ThemedText>\n          <ThemedText type="title" style={styles.title}>{PRODUCT.description}</ThemedText>\n        </ScrollView>\n      </SafeAreaView>\n    </ThemedView>\n  );\n}\n\nconst styles = StyleSheet.create({\n  screen: { flex: 1 },\n  safeArea: { flex: 1 },\n  content: { width: '100%', maxWidth: MaxContentWidth, alignSelf: 'center', padding: Spacing.four, paddingBottom: BottomTabInset + Spacing.six, gap: Spacing.three },\n  eyebrow: { color: ${JSON.stringify(config.brandColor)}, textTransform: 'uppercase', letterSpacing: 2, textAlign: rtlTextAlign.start },\n  title: { marginTop: Spacing.four, textAlign: rtlTextAlign.start },\n});\n`;
+  writeFileSync(resolve(root, "src/app/index.tsx"), index);
+
+  const settings = `import { ScrollView, StyleSheet } from 'react-native';\nimport { SafeAreaView } from 'react-native-safe-area-context';\n\nimport { ThemedText } from '@/components/themed-text';\nimport { ThemedView } from '@/components/themed-view';\nimport { VersionDebugRow } from '@/components/version-debug-row';\nimport { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';\nimport { PRODUCT } from '@/constants/product';\n\nexport default function SettingsScreen() {\n  return (\n    <ThemedView style={styles.screen}>\n      <SafeAreaView style={styles.safeArea}>\n        <ScrollView contentContainerStyle={styles.content}>\n          <ThemedText type="title">{${JSON.stringify(shellLabels.settings)}}</ThemedText>\n          <ThemedView type="backgroundElement" style={styles.card}>\n            <ThemedText type="smallBold">{${JSON.stringify(shellLabels.productLocales)}}</ThemedText>\n            <ThemedText themeColor="textSecondary">{PRODUCT.locales.join(', ')}</ThemedText>\n          </ThemedView>\n          <ThemedView type="backgroundElement" style={styles.card}>\n            <ThemedText type="smallBold">{${JSON.stringify(shellLabels.layoutDirection)}}</ThemedText>\n            <ThemedText themeColor="textSecondary">{PRODUCT.direction}</ThemedText>\n          </ThemedView>\n          <ThemedText type="smallBold" themeColor="textSecondary">{${JSON.stringify(shellLabels.about)}}</ThemedText>\n          <VersionDebugRow />\n        </ScrollView>\n      </SafeAreaView>\n    </ThemedView>\n  );\n}\n\nconst styles = StyleSheet.create({\n  screen: { flex: 1 },\n  safeArea: { flex: 1 },\n  content: { width: '100%', maxWidth: MaxContentWidth, alignSelf: 'center', padding: Spacing.four, paddingBottom: BottomTabInset + Spacing.six, gap: Spacing.three },\n  card: { borderRadius: Spacing.four, padding: Spacing.four, gap: Spacing.one },\n});\n`;
+  writeFileSync(settingsRoute, settings);
+
+  writeFileSync(resolve(root, "src/app/_layout.tsx"), `import { DarkTheme, DefaultTheme, LocaleProvider, ThemeProvider } from 'expo-router';\nimport * as SplashScreen from 'expo-splash-screen';\nimport { useColorScheme } from 'react-native';\n\nimport { AnimatedSplashOverlay } from '@/components/animated-icon';\nimport AppTabs from '@/components/app-tabs';\nimport { isRTL } from '@/utils/rtl';\n\nSplashScreen.preventAutoHideAsync();\n\nexport default function TabLayout() {\n  const colorScheme = useColorScheme();\n  return (\n    <LocaleProvider direction={isRTL ? 'rtl' : 'ltr'}>\n      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>\n        <AnimatedSplashOverlay />\n        <AppTabs />\n      </ThemeProvider>\n    </LocaleProvider>\n  );\n}\n`);
+
+  writeFileSync(resolve(root, "src/components/app-tabs.tsx"), `import { NativeTabs } from 'expo-router/unstable-native-tabs';\nimport { useColorScheme } from 'react-native';\n\nimport { Colors } from '@/constants/theme';\n\nexport default function AppTabs() {\n  const scheme = useColorScheme();\n  const colors = Colors[scheme === 'unspecified' ? 'light' : scheme];\n  return (\n    <NativeTabs backgroundColor={colors.background} indicatorColor={colors.backgroundElement} labelStyle={{ selected: { color: colors.text } }}>\n      <NativeTabs.Trigger name="index">\n        <NativeTabs.Trigger.Label>{${JSON.stringify(shellLabels.home)}}</NativeTabs.Trigger.Label>\n        <NativeTabs.Trigger.Icon src={require('@/assets/images/tabIcons/home.png')} renderingMode="template" />\n      </NativeTabs.Trigger>\n      <NativeTabs.Trigger name="settings">\n        <NativeTabs.Trigger.Label>{${JSON.stringify(shellLabels.settings)}}</NativeTabs.Trigger.Label>\n        <NativeTabs.Trigger.Icon src={require('@/assets/images/tabIcons/explore.png')} renderingMode="template" />\n      </NativeTabs.Trigger>\n    </NativeTabs>\n  );\n}\n`);
+
+{{/mobile}}
+{{#web}}
+function writeSiteShell() {
+  const content = `export default function Home() {\n  return (\n    <main>\n      <section className="hero" id="top">\n        <div className="hero-glow" />\n        <div className="hero-copy">\n          <p className="eyebrow"><span />${escapeJsxText(config.productName)}</p>\n          <h1>${escapeJsxText(config.description)}</h1>\n        </div>\n      </section>\n\n      <footer>\n        <a className="brand" href="#top"><span>${escapeJsxText(config.productName)}</span></a>\n        <p>© {new Date().getFullYear()} ${escapeJsxText(config.productName)}</p>\n      </footer>\n    </main>\n  );\n}\n`;
+  writeFileSync(resolve(root, "app/page.tsx"), content);
+  rmSync(resolve(root, "app/landing-content.ts"), { force: true });
+{{/web}}
+}
+
+function writeReadme() {
+{{#mobile}}
+  const content = `# ${config.productName}\n\n${config.description}\n\nThis Expo client targets iOS and Android only. Add backend or API code separately when the product requires it.\n\n## Development\n\n\`\`\`bash\nnpm install\nnpx expo start\n\`\`\`\n\n## Product context\n\nRead [PRODUCT.md](./PRODUCT.md) before changing product behavior or copy. Read [DESIGN.md](./DESIGN.md) before changing visual or layout decisions.\n\n## Versioning and debug menu\n\nThe Settings screen shows \`<app version>-<OTA update>\`. Triple-tap the version row to open native diagnostics. Use \`npm run update\`, \`npm run build:production:ios\`, and \`npm run build:production:android\` so version bumps are committed before EAS commands. Link the repository to an EAS project and run \`npx eas update:configure\` before the first OTA release.\n\n## Included agent skills\n\n- \`add-app-iap\` for RevenueCat purchases\n- \`app-onboarding\` for conversion-focused onboarding\n- \`expo-publish\` for EAS releases\n- \`rtl-layout\` for bidirectional interfaces\n- \`app-version-update\` for release and OTA versioning\n- \`execute-plan\` for implementing Markdown plans task by task\n\nClaude Code discovers skills in \`.claude/skills\`; Codex discovers them in \`.agents/skills\`.\n`;
+{{/mobile}}
+{{#web}}
+  const content = `# ${config.productName}\n\n${config.description}\n\n## Development\n\n\`\`\`bash\nnpm install\nnpm run dev\n\`\`\`\n\nOpen [http://localhost:3000](http://localhost:3000).\n\n## Product context\n\nRead [PRODUCT.md](./PRODUCT.md) before changing product behavior or copy. Read [DESIGN.md](./DESIGN.md) before changing visual or layout decisions.\n\n## Included agent skills\n\n- \`grow-business-payments\` for Grow payment links and webhooks\n- \`execute-plan\` for implementing Markdown plans task by task\n\nClaude Code discovers skills in \`.claude/skills\`; Codex discovers them in \`.agents/skills\`.\n`;
+{{/web}}
+  writeFileSync(resolve(root, "README.md"), content);
+}
+
+function writeMcpConfigs() {
+  const servers = {};
+  if (config.database === "neon") servers.neon = { type: "http", url: "https://mcp.neon.tech/mcp" };
+  if (config.analytics === "posthog") servers.posthog = { type: "http", url: "https://mcp.posthog.com/mcp" };
+  if (config.email === "resend") servers.resend = { type: "http", url: "https://mcp.resend.com/mcp" };
+  if (Object.keys(servers).length === 0) return;
+{{#web}}
+
+{{/web}}
+  const claudePath = resolve(root, ".mcp.json");
+  const claude = existsSync(claudePath) ? readJson(claudePath) : {};
+  claude.mcpServers = { ...(claude.mcpServers ?? {}), ...servers };
+  writeJson(claudePath, claude);
+{{#web}}
+
+{{/web}}
+  const codexPath = resolve(root, ".codex/config.toml");
+  mkdirSync(resolve(root, ".codex"), { recursive: true });
+  let codex = existsSync(codexPath) ? readFileSync(codexPath, "utf8").trimEnd() : "";
+  for (const [name, server] of Object.entries(servers)) {
+    if (new RegExp(`^\\[mcp_servers\\.${name}\\]`, "m").test(codex)) continue;
+    codex += `${codex ? "\n\n" : ""}[mcp_servers.${name}]\nurl = ${JSON.stringify(server.url)}\n`;
+  }
+  writeFileSync(codexPath, codex);
+}
+
+function readJson(path) { return JSON.parse(readFileSync(path, "utf8")); }
+function writeJson(path, value) { writeFileSync(path, `${JSON.stringify(value, null, 2)}\n`); }
+{{#web}}
+function escapeJsxText(value) { return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("{", "&#123;").replaceAll("}", "&#125;"); }
+{{/web}}
+function fail(message) { console.error(message); process.exit(1); }
