@@ -137,6 +137,17 @@ export function ProductAccess({ userName, githubAccess }: { userName: string; gi
                   ))}
                 </div>
 
+                <Link
+                  href={`/videos/${repo.id}`}
+                  className="mt-8 flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-black/20 px-5 py-4 transition hover:border-zinc-500 hover:bg-black/30"
+                >
+                  <span>
+                    <span className="block text-sm font-black text-white">מדריכי וידאו</span>
+                    <span className="mt-1 block text-sm text-zinc-500">צופים בהדרכה ומסמנים התקדמות</span>
+                  </span>
+                  <span className="text-xl" style={{ color: repo.accent }} aria-hidden="true">←</span>
+                </Link>
+
                 {active ? (
                   <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                     <a
