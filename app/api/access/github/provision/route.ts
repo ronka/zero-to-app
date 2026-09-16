@@ -21,8 +21,7 @@ import {
   isRepositoryCollaborator,
 } from "@/lib/github/app";
 import { provisionGitHubRepositories } from "@/lib/github/provision";
-
-const ENTITLEMENT_KEY = "zero-to-saas";
+import { ZERO_TO_APP_ENTITLEMENT_KEY } from "@/lib/grow/products";
 
 function sameOrigin(request: Request) {
   const configured = process.env.BETTER_AUTH_URL;
@@ -40,7 +39,7 @@ export async function POST(request: Request) {
   }
 
   const session = await auth.api.getSession({ headers: request.headers });
-  const authorization = await authorizeAccess(session, ENTITLEMENT_KEY, {
+  const authorization = await authorizeAccess(session, ZERO_TO_APP_ENTITLEMENT_KEY, {
     findEntitlement: findActiveEntitlement,
     claim: claimEntitlement,
   });

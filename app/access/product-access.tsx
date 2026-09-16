@@ -1,14 +1,12 @@
 import Link from "next/link";
 
 import { ACCESS_REPOSITORIES } from "@/lib/access/repositories";
+import { BRAND_WORDMARK, SUPPORT_EMAIL } from "@/lib/brand";
 
 import { CopyButton } from "./copy-button";
 import { GitHubAccessCard, type RepositoryAccessView } from "./github-access-card";
 
 // Rendered by app/access/page.tsx only after the session and entitlement checks pass.
-
-// TODO: replace with the real support inbox before launch.
-const SUPPORT_EMAIL = "support@example.com";
 
 const steps = [
   {
@@ -77,9 +75,9 @@ export function ProductAccess({ userName, githubAccess }: { userName: string; gi
     <main dir="rtl" className="flex-1 overflow-hidden bg-[var(--background)] text-[var(--foreground)]">
       <header className="border-b border-[var(--line)]">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5 md:px-8">
-          <Link href="/" className="flex items-center gap-3 font-mono text-[15px] font-bold tracking-tight text-white" aria-label="Zero to SaaS — דף הבית">
+          <Link href="/" className="flex items-center gap-3 font-mono text-[15px] font-bold tracking-tight text-white" aria-label="Zero to App — דף הבית">
             <Mark />
-            <span dir="ltr">ZERO → SAAS</span>
+            <span dir="ltr">{BRAND_WORDMARK}</span>
           </Link>
           <span className="rounded-full border border-[var(--lime)]/40 bg-[rgba(199,255,74,.07)] px-4 py-2 text-sm font-bold text-[var(--lime)]">
             רכישה פעילה ✓
@@ -229,7 +227,7 @@ export function ProductAccess({ userName, githubAccess }: { userName: string; gi
             </p>
           </div>
           <a
-            href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Zero to SaaS — GitHub access")}`}
+            href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Zero to App — GitHub access")}`}
             className="inline-flex min-h-12 shrink-0 items-center justify-center rounded-full bg-[var(--ink)] px-6 text-sm font-black text-white transition hover:bg-black"
           >
             כתבו לי
@@ -239,7 +237,7 @@ export function ProductAccess({ userName, githubAccess }: { userName: string; gi
 
       <footer className="border-t border-[var(--line)]">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-5 py-8 text-sm text-zinc-500 md:flex-row md:px-8">
-          <div className="flex items-center gap-3 text-white"><Mark /><span className="font-mono font-bold" dir="ltr">ZERO → SAAS</span></div>
+          <div className="flex items-center gap-3 text-white"><Mark /><span className="font-mono font-bold" dir="ltr">{BRAND_WORDMARK}</span></div>
           <p dir="ltr">© {new Date().getFullYear()} Ron Kantor</p>
         </div>
       </footer>

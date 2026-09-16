@@ -51,7 +51,7 @@ const delivery: AccessEmailDelivery = {
   callbackPath: "/access",
   payerEmail: "buyer@example.com",
   payerName: "ישראל ישראלי",
-  productName: "תשתית מוכנה לאפליקציות",
+  productName: "Zero to App",
 };
 
 test("parses and verifies a JSON webhook without retaining sensitive fields", async () => {
@@ -68,7 +68,7 @@ test("parses and verifies a JSON webhook without retaining sensitive fields", as
     payerName: "ישראל ישראלי",
     paymentDate: "14/09/26",
     processId: "3992305",
-    productName: "תשתית מוכנה לאפליקציות",
+    productName: "Zero to App",
     providerTransactionId: "tx-123",
   });
   assert.equal(JSON.stringify(purchase).includes("must-not-be-retained"), false);
@@ -233,10 +233,10 @@ test("Resend returned errors are delivery failures and the copy matches expiry",
       {
         email: "buyer@example.com",
         url: "https://example.com/api/auth/magic-link/verify?token=secret",
-        metadata: { deliveryId: "delivery-1", productName: "Zero to SaaS" },
+        metadata: { deliveryId: "delivery-1", productName: "Zero to App" },
       },
       {
-        from: "Zero to SaaS <access@example.com>",
+        from: "Zero to App <access@zerotoapp.co.il>",
         provider: {
           send: async (message) => {
             assert.match(message.text, /15 דקות/);

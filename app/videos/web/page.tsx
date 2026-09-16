@@ -4,8 +4,8 @@ import { VideoGuidePage } from "../_components/video-guide-page";
 import type { TutorialVideo } from "../_lib/videos";
 
 export const metadata: Metadata = {
-  title: "מדריכי Web — Zero to SaaS",
-  description: "מדריכי וידאו לעבודה עם תבנית ה־Web של Zero to SaaS.",
+  title: "מדריכי Web",
+  description: "מדריכי וידאו לעבודה עם תבנית ה־Web של Zero to App.",
 };
 
 const videos = [

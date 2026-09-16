@@ -1,4 +1,4 @@
-# Zero to SaaS template sources
+# Zero to App template sources
 
 This folder is the source of truth for files shared by the mobile and web starter repositories. Generated files are committed in each starter so every starter remains independently usable.
 

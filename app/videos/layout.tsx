@@ -19,10 +19,10 @@ export default function VideosLayout({ children }: LayoutProps<"/videos">) {
           <Link
             href="/"
             className="flex items-center gap-3 font-mono text-[15px] font-bold tracking-tight text-white"
-            aria-label="Zero to SaaS — דף הבית"
+            aria-label="Zero to App — דף הבית"
           >
             <Mark />
-            <span dir="ltr">ZERO → SAAS</span>
+            <span dir="ltr">ZERO → APP</span>
           </Link>
 
           <nav className="flex items-center gap-2" aria-label="מדריכי וידאו">
@@ -46,7 +46,7 @@ export default function VideosLayout({ children }: LayoutProps<"/videos">) {
 
       <footer className="mt-auto border-t border-[var(--line)]">
         <div className="mx-auto max-w-7xl px-5 py-8 text-center text-sm text-zinc-500 md:px-8">
-          מדריכי Zero to SaaS
+          מדריכי Zero to App
         </div>
       </footer>
     </div>

@@ -40,7 +40,7 @@ export async function dispatchAccessEmail(delivery: AccessEmailDelivery) {
         },
         headers: new Headers({
           origin: baseUrl(),
-          "user-agent": "zero-to-saas-access-delivery",
+          "user-agent": "zero-to-app-access-delivery",
         }),
       });
     },

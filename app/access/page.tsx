@@ -16,13 +16,12 @@ import {
   findGitHubConnection,
   listGitHubRepositoryGrants,
 } from "@/lib/db";
+import { ZERO_TO_APP_ENTITLEMENT_KEY } from "@/lib/grow/products";
 
 import { ProductAccess } from "./product-access";
 
-const ENTITLEMENT_KEY = "zero-to-saas";
-
 export const metadata: Metadata = {
-  title: "הגישה שלכם — Zero to SaaS",
+  title: "הגישה שלכם",
   robots: { index: false, follow: false },
 };
 
@@ -34,7 +33,7 @@ export default async function AccessPage({
   const requestHeaders = await headers();
   const session = await auth.api.getSession({ headers: requestHeaders });
   if (!session?.user) redirect("/login");
-  const authorization = await authorizeAccess(session, ENTITLEMENT_KEY, {
+  const authorization = await authorizeAccess(session, ZERO_TO_APP_ENTITLEMENT_KEY, {
     findEntitlement: findActiveEntitlement,
     claim: claimEntitlement,
   });

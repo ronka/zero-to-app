@@ -41,7 +41,7 @@ function headers(token: string) {
   return {
     Accept: "application/vnd.github+json",
     Authorization: `Bearer ${token}`,
-    "User-Agent": "zero-to-saas-access",
+    "User-Agent": "zero-to-app-access",
     "X-GitHub-Api-Version": GITHUB_API_VERSION,
   };
 }

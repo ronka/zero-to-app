@@ -37,7 +37,7 @@ export async function deliverMagicLinkEmail(
   if (!deliveryId) throw new Error("Tracked delivery ID is required");
 
   const productName =
-    typeof metadata?.productName === "string" ? metadata.productName : "Zero to SaaS";
+    typeof metadata?.productName === "string" ? metadata.productName : "Zero to App";
   const minutes = MAGIC_LINK_EXPIRES_IN_SECONDS / 60;
   const safeUrl = escapeHtml(url);
   const safeProductName = escapeHtml(productName);

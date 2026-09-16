@@ -7,7 +7,7 @@ type VideoCompletionButtonProps = {
   videoId: string;
 };
 
-const COMPLETION_EVENT = "zero-to-saas:video-completion-changed";
+const COMPLETION_EVENT = "zero-to-app:video-completion-changed";
 
 function readCompletedVideos(storageKey: string): Set<string> {
   try {

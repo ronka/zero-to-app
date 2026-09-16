@@ -1,6 +1,6 @@
-# Zero to SaaS
+# Zero to App
 
-Hebrew landing page and paid buyer portal for the Zero to SaaS Web and Mobile templates.
+Hebrew landing page and paid buyer portal for the Zero to App Web and Mobile templates.
 
 ## Purchase and access lifecycle
 
@@ -8,7 +8,7 @@ The site is buyer-only:
 
 1. Grow sends a PaymentLinks notification to `POST /api/webhooks/grow`.
 2. The server verifies paid statuses, process `3992305`, its configured process token, and the exact product bundle (`842436`, quantity `1`).
-3. One database transaction stores the purchase, item, `zero-to-saas` entitlement, and pending email delivery.
+3. One database transaction stores the purchase, item, legacy-stable `zero-to-saas` entitlement, and pending email delivery.
 4. After commit, Better Auth creates a 15-minute, single-use, hashed magic-link token and Resend sends it.
 5. Redeeming the link creates or signs in the Better Auth user and redirects to `/access`.
 6. `/access` checks the verified server session and an active entitlement for the normalized session email before exposing repository links.
@@ -31,7 +31,7 @@ npm run dev
 
 Create one GitHub App under the account or organization that owns the two template repositories.
 
-- Set the callback URL to `https://YOUR_DOMAIN/api/auth/callback/github` and add the localhost equivalent for local testing. Disable callback wildcard matching.
+- Set the callback URL to `https://zerotoapp.co.il/api/auth/callback/github` and add the localhost equivalent for local testing. Disable callback wildcard matching.
 - Disable webhooks and device flow. Do not enable **Request user authorization during installation**; buyers authorize from the portal and never install the app.
 - Set repository permission **Administration** to **Read and write** and user permission **Email addresses** to **Read-only**. Leave Contents and all other permissions at **No access**. Better Auth needs the email permission because a GitHub account may keep its primary email private.
 - Install the app on the repository owner and select only the two template repositories.
@@ -46,9 +46,9 @@ For local OAuth, set `BETTER_AUTH_URL=http://localhost:3000`, add `http://localh
 
 These provider-side steps require a human account owner:
 
-- Ask Grow support to enable the PaymentLinks webhook for process `3992305` and set it to `https://YOUR_DOMAIN/api/webhooks/grow`.
+- Ask Grow support to enable the PaymentLinks webhook for process `3992305` and set it to `https://zerotoapp.co.il/api/webhooks/grow`.
 - Capture the `paymentLinkProcessToken` from a verified Grow server notification and set `GROW_PAYMENT_LINK_PROCESS_TOKEN`. Confirm with Grow whether this merchant flow also requires the separate Approve Transaction API; if it does, add the merchant credentials and acknowledgement before launch.
-- Set the payment link success URL to `https://YOUR_DOMAIN/thank-you` and failure/cancellation URL to the public sales page.
+- Set the payment link success URL to `https://zerotoapp.co.il/thank-you` and failure/cancellation URL to `https://zerotoapp.co.il/`.
 - Verify the sending domain in Resend, publish its DNS records, and set `RESEND_API_KEY` and `ACCESS_EMAIL_FROM` to that domain.
 - Set production `BETTER_AUTH_URL`, a strong `BETTER_AUTH_SECRET`, `DATABASE_URL`, and the two protected repository URLs.
 - Configure and install the GitHub App as described above. Check the GitHub plan's outside-collaborator seat cost and repository invitation rate limit before launch.

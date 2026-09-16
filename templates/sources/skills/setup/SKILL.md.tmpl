@@ -9,10 +9,10 @@ description: Set up this web repository from a product name and description. Run
 ---
 
 {{#mobile}}
-# Set up the mobile product with Zero to SaaS
+# Set up the mobile product with Zero to App
 {{/mobile}}
 {{#web}}
-# Set up the web product with Zero to SaaS
+# Set up the web product with Zero to App
 {{/web}}
 
 {{#mobile}}
@@ -27,16 +27,16 @@ This is a one-time workflow. Match the language the user writes in. Treat conver
 Before asking questions or changing files, look for `SETUP.md` at the repository root.
 
 {{#mobile}}
-- If it exists with `Status: in-progress`, read its decisions and notes, then continue from the first unchecked item. Do not repeat completed work or questions whose answers are recorded. If no decisions have been recorded and no setup work has been completed apart from preinstalled foundations, treat it as a fresh setup: do not announce that an in-progress file was found. Open the first question with `Welcome to the Zero to SaaS starter — ready to ship? 🚀` in the user's language.
+- If it exists with `Status: in-progress`, read its decisions and notes, then continue from the first unchecked item. Do not repeat completed work or questions whose answers are recorded. If no decisions have been recorded and no setup work has been completed apart from preinstalled foundations, treat it as a fresh setup: do not announce that an in-progress file was found. Open the first question with `Welcome to the Zero to App starter — ready to ship? 🚀` in the user's language.
 {{/mobile}}
 {{#web}}
-- If it exists with `Status: in-progress`, read its decisions and notes, then continue from the first unchecked item. Do not repeat completed work or questions whose answers are recorded. If no decisions have been recorded and no setup work has been completed, treat it as a fresh setup: do not announce that an in-progress file was found. Open the first question with `Welcome to the Zero to SaaS starter — ready to ship? 🚀` in the user's language.
+- If it exists with `Status: in-progress`, read its decisions and notes, then continue from the first unchecked item. Do not repeat completed work or questions whose answers are recorded. If no decisions have been recorded and no setup work has been completed, treat it as a fresh setup: do not announce that an in-progress file was found. Open the first question with `Welcome to the Zero to App starter — ready to ship? 🚀` in the user's language.
 {{/web}}
 - If it exists with `Status: complete`, tell the user initialization is already complete and summarize the recorded result.
 - If it does not exist, create it immediately from this exact structure and keep it updated after every completed stage:
 
 ```markdown
-# Zero to SaaS setup
+# Zero to App setup
 
 Status: in-progress
 Last updated: YYYY-MM-DD
@@ -221,10 +221,10 @@ Run `npm run lint` and `npm run build`. Resolve failures caused by initializatio
 {{/web}}
 
 {{#mobile}}
-Search tracked text, excluding `.git`, build output, dependencies, binary assets, and both copies of the setup-only `setup` skill, for `zero-to-saas`, `starter app`, `Welcome to Expo`, `Expo Starter`, and the old package name. Resolve every remaining match that would make the repository feel like a template.
+Search tracked text, excluding `.git`, build output, dependencies, binary assets, and both copies of the setup-only `setup` skill, for `zero-to-app`, `zero-to-saas`, `starter app`, `Welcome to Expo`, `Expo Starter`, and the old package name. Resolve every remaining match that would make the repository feel like a template.
 {{/mobile}}
 {{#web}}
-Search tracked text, excluding `.git`, build output, dependencies, and both copies of the setup-only `setup` skill, for `zero-to-saas`, `starter template`, `Create Next App`, and the old package name. Resolve every remaining match that would make the repository feel like a template.
+Search tracked text, excluding `.git`, build output, dependencies, and both copies of the setup-only `setup` skill, for `zero-to-app`, `zero-to-saas`, `starter template`, `Create Next App`, and the old package name. Resolve every remaining match that would make the repository feel like a template.
 {{/web}}
 
 {{#mobile}}
@@ -234,10 +234,10 @@ After all prior checks pass, fill the `SETUP.md` handoff with a one-sentence cre
 After all prior checks pass, fill the `SETUP.md` handoff with a one-sentence creation summary, `npm run dev`, and the highest-value next product step. Set the final decisions and verification results, remove both copies of this `setup` skill and `scripts/init-project.mjs`, then check the final two items and set `Status: complete`. The initialized repository should retain the other bundled skills and contain no setup-only files.
 {{/web}}
 
-Finish in the user's conversation language with a compact Zero to SaaS handoff. Keep it to roughly 10 lines and use exactly two fitting emojis:
+Finish in the user's conversation language with a compact Zero to App handoff. Keep it to roughly 10 lines and use exactly two fitting emojis:
 
 1. A heading that says the product is ready and includes `🚀`.
-2. `Zero to SaaS setup is complete.` translated naturally when needed.
+2. `Zero to App setup is complete.` translated naturally when needed.
 {{#mobile}}
 3. **Created:** one or two sentences covering the app identity, minimal shell, selected integrations, app-version/debug foundation, and successful checks.
 4. **Continue:** two or three concrete actions, starting with `npm run ios` or `npm run android`; include only authentication, EAS linking, or brand assets still required.

@@ -1,14 +1,17 @@
 export const GROW_PAYMENT_URL =
   "https://pay.grow.link/ODY2MzU~3080f4232289502bf77a98ca45db8b5a-Mzk5MjQyMg";
 
+// This value is persisted in existing buyer entitlements. Keep it stable across rebrands.
+export const ZERO_TO_APP_ENTITLEMENT_KEY = "zero-to-saas";
+
 export const GROW_PRODUCTS = {
   "3992305": {
-    name: "תשתית מוכנה לאפליקציות",
+    name: "Zero to App",
     callbackPath: "/access",
     paymentLinkProcessTokenEnv: "GROW_PAYMENT_LINK_PROCESS_TOKEN",
     products: {
       "842436": {
-        entitlementKey: "zero-to-saas",
+        entitlementKey: ZERO_TO_APP_ENTITLEMENT_KEY,
         quantity: 1,
       },
     },

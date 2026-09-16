@@ -51,9 +51,9 @@ export default function Home() {
 
       <header className="absolute inset-x-0 top-0 z-40">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5 md:px-8">
-          <a href="#top" className="flex items-center gap-3 font-mono text-[15px] font-bold tracking-tight text-white" aria-label="Zero to SaaS — דף הבית">
+          <a href="#top" className="flex items-center gap-3 font-mono text-[15px] font-bold tracking-tight text-white" aria-label="Zero to App — דף הבית">
             <Mark />
-            <span dir="ltr">ZERO → SAAS</span>
+            <span dir="ltr">ZERO → APP</span>
           </a>
           <nav className="hidden items-center gap-8 text-[15px] font-medium text-zinc-300 md:flex" aria-label="ניווט ראשי">
             <a className="transition hover:text-[var(--lime)]" href="#included">מה בפנים</a>
@@ -284,7 +284,7 @@ export default function Home() {
 
       <footer className="border-t border-[var(--line)]">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 px-5 py-8 text-sm text-zinc-500 md:flex-row md:px-8">
-          <div className="flex items-center gap-3 text-white"><Mark /><span className="font-mono font-bold" dir="ltr">ZERO → SAAS</span></div>
+          <div className="flex items-center gap-3 text-white"><Mark /><span className="font-mono font-bold" dir="ltr">ZERO → APP</span></div>
           <p>נבנה בישראל, בשביל מי שמעדיף מוצר עובד על עוד שבוע של setup.</p>
           <p dir="ltr">© {new Date().getFullYear()} Ron Kantor</p>
         </div>
