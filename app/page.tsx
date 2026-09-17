@@ -1,5 +1,8 @@
 import Image from "next/image";
+import { headers } from "next/headers";
+import Link from "next/link";
 
+import { auth } from "@/lib/auth";
 import { GROW_PAYMENT_URL } from "@/lib/grow/products";
 
 const integrations = [
@@ -44,7 +47,10 @@ function Mark() {
   );
 }
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  const isLoggedIn = Boolean(session?.user);
+
   return (
     <main dir="rtl" className="overflow-hidden bg-[var(--background)] text-[var(--foreground)]">
       <div className="pointer-events-none fixed inset-0 z-50 opacity-[0.035] [background-image:url('data:image/svg+xml,%3Csvg_viewBox=%220_0_180_180%22_xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter_id=%22n%22%3E%3CfeTurbulence_type=%22fractalNoise%22_baseFrequency=%22.9%22_numOctaves=%222%22_stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect_width=%22100%25%22_height=%22100%25%22_filter=%22url(%23n)%22_opacity=%22.8%22/%3E%3C/svg%3E')]" />
@@ -60,9 +66,20 @@ export default function Home() {
             <a className="transition hover:text-[var(--lime)]" href="#how">איך זה עובד</a>
             <a className="transition hover:text-[var(--lime)]" href="#about">מי אני</a>
           </nav>
-          <a href={GROW_PAYMENT_URL} target="_blank" rel="noreferrer" className="rounded-full border border-[var(--line)] bg-white/5 px-5 py-2.5 text-sm font-bold transition hover:border-[var(--lime)] hover:text-[var(--lime)]">
-            לרכישה — ₪590
-          </a>
+          {isLoggedIn ? (
+            <Link href="/access" className="rounded-full bg-[var(--lime)] px-5 py-2.5 text-sm font-black text-[var(--ink)] transition hover:-translate-y-0.5">
+              לגישה שלי
+            </Link>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Link href="/login" className="rounded-full px-3 py-2.5 text-sm font-bold text-zinc-300 transition hover:text-[var(--lime)] sm:px-4">
+                כניסה
+              </Link>
+              <a href={GROW_PAYMENT_URL} target="_blank" rel="noreferrer" className="rounded-full border border-[var(--line)] bg-white/5 px-4 py-2.5 text-sm font-bold transition hover:border-[var(--lime)] hover:text-[var(--lime)] sm:px-5">
+                לרכישה<span className="hidden sm:inline"> — ₪590</span>
+              </a>
+            </div>
+          )}
         </div>
       </header>
 
@@ -274,11 +291,25 @@ export default function Home() {
           <p className="font-mono text-sm font-bold text-[var(--lime)]">{"// READY WHEN YOU ARE"}</p>
           <h2 className="mt-6 text-[clamp(3.5rem,9vw,8rem)] font-black leading-[.83] tracking-[-.065em]">תפסיקו להכין.<br /><span className="text-[var(--lime)]">תתחילו להשיק.</span></h2>
           <p className="mx-auto mt-8 max-w-2xl text-lg leading-8 text-zinc-400">מקבלים את תשתית ה־Web וה־Mobile המוכנה, עם ה־Skills שמחברים הכול יחד.</p>
-          <a href={GROW_PAYMENT_URL} target="_blank" rel="noreferrer" className="group mt-10 inline-flex min-h-16 items-center justify-center gap-3 rounded-full bg-[var(--lime)] px-9 text-lg font-black text-[var(--ink)] transition hover:-translate-y-1 hover:shadow-[0_8px_0_#617d1e]">
-            לרכישה מאובטחת — ₪590
-            <span className="transition group-hover:translate-x-1" dir="ltr"><ArrowIcon /></span>
-          </a>
-          <p className="mt-5 text-sm text-zinc-500">התשלום מתבצע באופן מאובטח דרך grow.business.</p>
+          {isLoggedIn ? (
+            <Link href="/access" className="group mt-10 inline-flex min-h-16 items-center justify-center gap-3 rounded-full bg-[var(--lime)] px-9 text-lg font-black text-[var(--ink)] transition hover:-translate-y-1 hover:shadow-[0_8px_0_#617d1e]">
+              לגישה שלי
+              <span className="transition group-hover:translate-x-1" dir="ltr"><ArrowIcon /></span>
+            </Link>
+          ) : (
+            <>
+              <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+                <a href={GROW_PAYMENT_URL} target="_blank" rel="noreferrer" className="group inline-flex min-h-16 items-center justify-center gap-3 rounded-full bg-[var(--lime)] px-9 text-lg font-black text-[var(--ink)] transition hover:-translate-y-1 hover:shadow-[0_8px_0_#617d1e]">
+                  לרכישה מאובטחת — ₪590
+                  <span className="transition group-hover:translate-x-1" dir="ltr"><ArrowIcon /></span>
+                </a>
+                <Link href="/login" className="inline-flex min-h-16 items-center justify-center rounded-full border border-[var(--line)] bg-white/5 px-8 text-base font-bold transition hover:border-[var(--lime)] hover:text-[var(--lime)]">
+                  כבר רכשתם? התחברו
+                </Link>
+              </div>
+              <p className="mt-5 text-sm text-zinc-500">התשלום מתבצע באופן מאובטח דרך grow.business.</p>
+            </>
+          )}
         </div>
       </section>
 
