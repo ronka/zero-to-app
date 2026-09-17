@@ -1,10 +1,12 @@
 import { betterAuth } from "better-auth";
 import { magicLink } from "better-auth/plugins";
 
+import { authBaseUrl } from "./auth-url";
 import { database } from "./database";
 import { MAGIC_LINK_EXPIRES_IN_SECONDS, sendMagicLinkEmail } from "./email";
 
 export const auth = betterAuth({
+  baseURL: authBaseUrl(),
   database,
   account: {
     encryptOAuthTokens: true,

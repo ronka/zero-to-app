@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { authBaseUrl } from "@/lib/auth-url";
 import { authorizeAccess } from "@/lib/access/authorization";
 import {
   ACCESS_REPOSITORIES,
@@ -24,10 +25,8 @@ import { provisionGitHubRepositories } from "@/lib/github/provision";
 import { ZERO_TO_APP_ENTITLEMENT_KEY } from "@/lib/grow/products";
 
 function sameOrigin(request: Request) {
-  const configured = process.env.BETTER_AUTH_URL;
   const origin = request.headers.get("origin");
-  if (!configured || !origin) return false;
-  return origin === new URL(configured).origin;
+  return origin === authBaseUrl();
 }
 
 export async function POST(request: Request) {

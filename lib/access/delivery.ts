@@ -5,6 +5,7 @@ import {
   markAccessEmailFailed,
   queueAccessEmailForBuyer,
 } from "../db";
+import { authBaseUrl } from "../auth-url";
 import { dispatchClaimedAccessEmail } from "./dispatch";
 import {
   MAGIC_LINK_GENERIC_RESPONSE,
@@ -14,12 +15,6 @@ import {
 import type { AccessEmailDelivery } from "./types";
 
 export { MAGIC_LINK_GENERIC_RESPONSE, requestBuyerMagicLink } from "./request";
-
-function baseUrl() {
-  const value = process.env.BETTER_AUTH_URL;
-  if (!value) throw new Error("BETTER_AUTH_URL is not configured");
-  return value;
-}
 
 export async function dispatchAccessEmail(delivery: AccessEmailDelivery) {
   await dispatchClaimedAccessEmail(delivery, {
@@ -40,7 +35,7 @@ export async function dispatchAccessEmail(delivery: AccessEmailDelivery) {
           },
         },
         headers: new Headers({
-          origin: baseUrl(),
+          origin: authBaseUrl(),
           "user-agent": "zero-to-app-access-delivery",
         }),
       });

@@ -50,7 +50,7 @@ These provider-side steps require a human account owner:
 - Capture the `paymentLinkProcessToken` from a verified Grow server notification and set `GROW_PAYMENT_LINK_PROCESS_TOKEN`. Confirm with Grow whether this merchant flow also requires the separate Approve Transaction API; if it does, add the merchant credentials and acknowledgement before launch.
 - Set the payment link success URL to `https://zerotoapp.co.il/thank-you` and failure/cancellation URL to `https://zerotoapp.co.il/`.
 - Verify the sending domain in Resend, publish its DNS records, and set `RESEND_API_KEY` and `ACCESS_EMAIL_FROM` to that domain.
-- Set production `BETTER_AUTH_URL`, a strong `BETTER_AUTH_SECRET`, `DATABASE_URL`, and the two protected repository URLs.
+- Set production `BETTER_AUTH_URL=https://zerotoapp.co.il`, a strong `BETTER_AUTH_SECRET`, `DATABASE_URL`, and the two protected repository URLs. Production auth links are pinned to this canonical origin in code.
 - Configure and install the GitHub App as described above. Check the GitHub plan's outside-collaborator seat cost and repository invitation rate limit before launch.
 - Apply the SQL files in `db/migrations/` in numeric order. For an existing deployment, coordinate migration `003` with the release using the `zero-to-app` entitlement key; it preserves entitlement IDs and their GitHub grants.
 - Make one real low-value purchase and observe: webhook acceptance, one purchase and entitlement, email receipt, first-user creation, redirect to `/access`, existing-user login, and denial from another email. Then test expiry and fallback resend.
