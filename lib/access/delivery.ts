@@ -9,6 +9,7 @@ import { authBaseUrl } from "../auth-url";
 import { dispatchClaimedAccessEmail } from "./dispatch";
 import {
   MAGIC_LINK_GENERIC_RESPONSE,
+  magicLinkHttpResponse,
   requestBuyerMagicLink,
   type PublicMagicLinkDependencies,
 } from "./request";
@@ -78,12 +79,12 @@ export async function handlePublicMagicLinkRequest(request: Request) {
       website = form.get("website");
     }
   } catch {
-    return Response.json(MAGIC_LINK_GENERIC_RESPONSE);
+    return magicLinkHttpResponse({ body: MAGIC_LINK_GENERIC_RESPONSE, status: 200 });
   }
 
   const result = await requestBuyerMagicLink(
     { email, website, ip: requestIp(request) },
     defaultDependencies(),
   );
-  return Response.json(result);
+  return magicLinkHttpResponse(result);
 }

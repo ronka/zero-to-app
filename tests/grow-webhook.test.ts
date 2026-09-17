@@ -5,6 +5,8 @@ import { authorizeAccess } from "../lib/access/authorization";
 import { dispatchClaimedAccessEmail } from "../lib/access/dispatch";
 import {
   MAGIC_LINK_GENERIC_RESPONSE,
+  MAGIC_LINK_RATE_LIMIT_RESPONSE,
+  magicLinkHttpResponse,
   requestBuyerMagicLink,
 } from "../lib/access/request";
 import { deliverMagicLinkEmail } from "../lib/access/email-message";
@@ -220,9 +222,13 @@ test("public resend is enumeration-safe, rate-limited, and entitlement-gated", a
     { ...dependencies, consumeRateLimit: async () => false },
   );
 
-  assert.deepEqual(buyer, MAGIC_LINK_GENERIC_RESPONSE);
-  assert.deepEqual(stranger, MAGIC_LINK_GENERIC_RESPONSE);
-  assert.deepEqual(limited, MAGIC_LINK_GENERIC_RESPONSE);
+  assert.deepEqual(buyer, { body: MAGIC_LINK_GENERIC_RESPONSE, status: 200 });
+  assert.deepEqual(stranger, { body: MAGIC_LINK_GENERIC_RESPONSE, status: 200 });
+  assert.deepEqual(limited, { body: MAGIC_LINK_RATE_LIMIT_RESPONSE, status: 429 });
+  const limitedResponse = magicLinkHttpResponse(limited);
+  assert.equal(limitedResponse.status, 429);
+  assert.equal(limitedResponse.headers.get("retry-after"), "900");
+  assert.deepEqual(await limitedResponse.json(), MAGIC_LINK_RATE_LIMIT_RESPONSE);
   assert.equal(queued, 1);
   assert.equal(dispatched, 1);
 });
