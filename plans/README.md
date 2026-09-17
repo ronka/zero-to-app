@@ -29,7 +29,7 @@ Start with 001. The plans are technically independent; each includes its own res
 
 ## Repository baseline
 
-Root: `7ea4a19`; generator targets: `templates/starter-web` at `80e1726`, `templates/starter-mobile` at `874d326`. These are separate Git repositories. The other checkouts under `/Users/ronkantor/Projects/zero-to-saas-templates` are older and are not this generator's targets.
+Root: `7ea4a19`; generator targets: `templates/starter-web` at `80e1726`, `templates/starter-mobile` at `874d326`. These are separate Git repositories. Use the generator targets inside this repository; external starter checkouts are not generator targets.
 
 On 2026-09-17, `npm run test:templates` passed all five existing tests and confirmed all 52 generated artifacts current. This is the generation baseline, not proof of deployment functionality.
 

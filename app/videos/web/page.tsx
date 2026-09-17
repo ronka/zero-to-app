@@ -57,7 +57,7 @@ export default function WebVideosPage() {
       eyebrow="// WEB STARTER"
       title="מדריכי Web"
       introduction="כל מה שצריך כדי להפוך את תבנית ה־Next.js למוצר שלכם ולהתחיל לבנות."
-      storageKey="zero-to-saas:videos:web:completed"
+      storageKey="zero-to-app:videos:web:completed"
       videos={videos}
     />
   );

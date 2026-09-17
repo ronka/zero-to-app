@@ -8,7 +8,7 @@ The site is buyer-only:
 
 1. Grow sends a PaymentLinks notification to `POST /api/webhooks/grow`.
 2. The server verifies paid statuses, process `3992305`, its configured process token, and the exact product bundle (`842436`, quantity `1`).
-3. One database transaction stores the purchase, item, legacy-stable `zero-to-saas` entitlement, and pending email delivery.
+3. One database transaction stores the purchase, item, `zero-to-app` entitlement, and pending email delivery.
 4. After commit, Better Auth creates a 15-minute, single-use, hashed magic-link token and Resend sends it.
 5. Redeeming the link creates or signs in the Better Auth user and redirects to `/access`.
 6. `/access` checks the verified server session and an active entitlement for the normalized session email before exposing repository links.
@@ -21,7 +21,7 @@ Duplicate Grow notifications do not duplicate purchases or entitlements. Email f
 Copy `.env.example` to `.env.local` and configure all required values. Then apply the database migrations in order and run the app:
 
 ```bash
-node --env-file=.env.local --input-type=module -e 'import { readFileSync } from "node:fs"; import pg from "pg"; const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL }); for (const file of ["db/migrations/001_grow_purchases.sql", "db/migrations/002_github_access.sql"]) await pool.query(readFileSync(file, "utf8")); await pool.end();'
+node --env-file=.env.local --input-type=module -e 'import { readFileSync } from "node:fs"; import pg from "pg"; const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL }); for (const file of ["db/migrations/001_grow_purchases.sql", "db/migrations/002_github_access.sql", "db/migrations/003_zero_to_app_entitlements.sql"]) await pool.query(readFileSync(file, "utf8")); await pool.end();'
 npm run dev
 ```
 
@@ -52,7 +52,7 @@ These provider-side steps require a human account owner:
 - Verify the sending domain in Resend, publish its DNS records, and set `RESEND_API_KEY` and `ACCESS_EMAIL_FROM` to that domain.
 - Set production `BETTER_AUTH_URL`, a strong `BETTER_AUTH_SECRET`, `DATABASE_URL`, and the two protected repository URLs.
 - Configure and install the GitHub App as described above. Check the GitHub plan's outside-collaborator seat cost and repository invitation rate limit before launch.
-- Apply `db/migrations/001_grow_purchases.sql` and then `db/migrations/002_github_access.sql` before deploying the application.
+- Apply the SQL files in `db/migrations/` in numeric order. For an existing deployment, coordinate migration `003` with the release using the `zero-to-app` entitlement key; it preserves entitlement IDs and their GitHub grants.
 - Make one real low-value purchase and observe: webhook acceptance, one purchase and entitlement, email receipt, first-user creation, redirect to `/access`, existing-user login, and denial from another email. Then test expiry and fallback resend.
 - With that buyer, connect a GitHub account whose email differs from the purchase email, verify both invitations are read-only, accept them, recheck the portal, and confirm both template and clone controls unlock.
 

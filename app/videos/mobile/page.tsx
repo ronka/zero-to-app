@@ -66,7 +66,7 @@ export default function MobileVideosPage() {
       eyebrow="// MOBILE STARTER"
       title="מדריכי Mobile"
       introduction="כל מה שצריך כדי להתאים את תבנית ה־Expo, להפעיל אותה ולהמשיך עד לפרסום."
-      storageKey="zero-to-saas:videos:mobile:completed"
+      storageKey="zero-to-app:videos:mobile:completed"
       videos={videos}
     />
   );

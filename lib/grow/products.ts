@@ -1,8 +1,7 @@
 export const GROW_PAYMENT_URL =
   "https://pay.grow.link/ODY2MzU~3080f4232289502bf77a98ca45db8b5a-Mzk5MjQyMg";
 
-// This value is persisted in existing buyer entitlements. Keep it stable across rebrands.
-export const ZERO_TO_APP_ENTITLEMENT_KEY = "zero-to-saas";
+export const ZERO_TO_APP_ENTITLEMENT_KEY = "zero-to-app";
 
 export const GROW_PRODUCTS = {
   "3992305": {

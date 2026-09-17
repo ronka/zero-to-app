@@ -11,7 +11,7 @@
 
 ## Current state and drift check
 
-Root: `/Users/ronkantor/Projects/zero-to-saas`. Output: `templates/starter-mobile` (independent Git repository), not the older checkout under `/Users/ronkantor/Projects/zero-to-saas-templates`.
+Run root commands from this repository. Output: `templates/starter-mobile`, the independent Git repository targeted by this generator.
 
 Run `git diff --stat 7ea4a19..HEAD -- templates` and `git -C templates/starter-mobile diff --stat 874d326..HEAD`; inspect uncommitted status. Reconcile meaningful changes with these excerpts:
 

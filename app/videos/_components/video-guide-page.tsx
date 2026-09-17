@@ -11,7 +11,7 @@ type VideoGuidePageProps = {
   title: string;
   introduction: string;
   // Preserve the pre-rebrand key so existing completion data remains readable.
-  storageKey: `zero-to-saas:videos:${"web" | "mobile"}:completed`;
+  storageKey: `zero-to-app:videos:${"web" | "mobile"}:completed`;
   videos: readonly TutorialVideo[];
 };
 

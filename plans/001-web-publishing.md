@@ -12,7 +12,7 @@
 
 ## Current state and drift check
 
-Root is `/Users/ronkantor/Projects/zero-to-saas`. The canonical output is `templates/starter-web`, a separate Git repository; do not use the older checkout at `/Users/ronkantor/Projects/zero-to-saas-templates/starter-web`.
+Run root commands from this repository. The canonical output is `templates/starter-web`, a separate Git repository inside it; use this generator target.
 
 Run `git diff --stat 7ea4a19..HEAD -- templates` and `git -C templates/starter-web diff --stat 80e1726..HEAD`. Inspect uncommitted status in both repositories too. Reconcile substantive changes to the excerpts below before implementation.
 

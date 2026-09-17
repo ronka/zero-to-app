@@ -63,7 +63,7 @@ test("parses and verifies a JSON webhook without retaining sensitive fields", as
   assert.deepEqual(purchase, {
     callbackPath: "/access",
     chargedTotal: "590",
-    items: [{ entitlementKey: "zero-to-saas", productId: "842436", quantity: 1 }],
+    items: [{ entitlementKey: "zero-to-app", productId: "842436", quantity: 1 }],
     payerEmail: "buyer@example.com",
     payerName: "ישראל ישראלי",
     paymentDate: "14/09/26",
@@ -256,24 +256,24 @@ test("Resend returned errors are delivery failures and the copy matches expiry",
 test("authorization denies anonymous, unverified, non-buyers, and the wrong product", async () => {
   const dependencies = {
     findEntitlement: async (_email: string, key: string) =>
-      key === "zero-to-saas" ? { id: "entitlement-1" } : null,
+      key === "zero-to-app" ? { id: "entitlement-1" } : null,
     claim: async () => true,
   };
   const buyer = {
     user: { id: "user-1", email: " BUYER@example.com ", emailVerified: true },
   };
 
-  assert.equal((await authorizeAccess(null, "zero-to-saas", dependencies)).status, "anonymous");
+  assert.equal((await authorizeAccess(null, "zero-to-app", dependencies)).status, "anonymous");
   assert.equal(
     (
       await authorizeAccess(
         { user: { ...buyer.user, emailVerified: false } },
-        "zero-to-saas",
+        "zero-to-app",
         dependencies,
       )
     ).status,
     "unverified",
   );
   assert.equal((await authorizeAccess(buyer, "another-product", dependencies)).status, "denied");
-  assert.equal((await authorizeAccess(buyer, "zero-to-saas", dependencies)).status, "granted");
+  assert.equal((await authorizeAccess(buyer, "zero-to-app", dependencies)).status, "granted");
 });
