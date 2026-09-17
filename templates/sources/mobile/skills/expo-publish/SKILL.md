@@ -1,129 +1,31 @@
 ---
 name: expo-publish
-description: Guides publishing an Expo/EAS app — OTA updates, production builds (iOS/Android), store submission, and simulator builds. Use when the user says "publish", "release", "submit to store", "OTA update", "build for production", "build simulator", or runs any EAS build/submit/update workflow. Knows the project's npm scripts, version-bump logic, and correct command order.
+description: Publish an Expo app through EAS tester builds, store submission, or compatible OTA updates. Configure missing release profiles and environment settings, verify results, and resume failed attempts.
 ---
 
-# Expo Publish
+# Publish the mobile app
 
-## Workflows
+Read `AGENTS.md`, `PRODUCT.md`, `SETUP.md` and `LAUNCH.md` when present. Match the conversation language and give one next action at a time. Infer the requested stage/platform; ask only when it is unclear whether the user wants a tester build, store submission, or an update.
 
-### 1. OTA Update (no store review needed)
+Read [first-release.md](references/first-release.md) for commands, environments and device/store prerequisites. Use [launch-state.md](references/launch-state.md) before the first external operation.
 
-Bumps `UPDATE_VERSION` in `constants/version.ts`, commits that bump, then pushes the update to all users on the current channel.
+## Prepare
 
-```bash
-npm run update
-```
+1. Inspect actual npm scripts, resolved Expo config and existing EAS linkage. Run `node <skill-directory>/scripts/configure.mjs --project <project-directory> --check`. With no conflicts, `--apply` adds the supported profiles/commands while preserving unrelated fields. Inspect named conflicts and reconcile intended settings; never overwrite custom configuration silently.
+2. Run `node <skill-directory>/scripts/check.mjs --project <project-directory> --platform <ios|android|all>`. Add `--update` for OTA. This checks local readiness, not authentication, signing, installation or store status. Run lint, TypeScript checks and Expo diagnostics; fix release-relevant failures.
+3. Verify the intended account/project. Link an unlinked initialized app and configure updates when needed, then rerun readiness. Guide owner login/account actions. Configure the app's required environment values for the selected EAS environment. Private backend credentials must stay in a backend.
 
-The commit is automatic — the script commits `constants/version.ts` before `eas update` runs, and aborts the update if the commit fails.
+## Publish and verify
 
----
+4. For first distribution, build for testers, save the build ID immediately, and verify installation/core behavior on a physical device. Record the actual build/version; an Expo Go session does not verify native purchases or OTA behavior.
+5. For a new production release, prepare the marketing version once, then build requested platforms using that version. Each existing single-platform production wrapper bumps and commits: do not chain them for a two-platform release. Use the separate prepare/build commands in the reference. Store build numbers are distinct from marketing version.
+6. Submit the exact verified build ID for the chosen platform. Save and inspect the submission receipt. Report uploaded, processing/testing, awaiting review, and publicly available separately. Give the owner the next necessary store action; submission does not imply publication.
+7. For OTA, verify the installed runtime, native-change compatibility, channel and environment before preparing the counter once. Preserve `runtimeVersion.policy: "appVersion"` and the counter in `src/components/version-debug-row.tsx`. Confirm receipt on the intended binary; native changes require a new binary/runtime.
 
-### 2. Production Build
+## Recover
 
-The build scripts auto-bump the patch version in `app.json` and commit it before building.
+Query recorded build/submission/update IDs before retrying. A timeout can leave a successful remote operation. Without an ID, inspect recent operations matching project, source, platform, version and target before issuing another.
 
-**iOS only:**
-```bash
-npm run build:production:ios
-```
+The app version or OTA counter may already have been committed before EAS failed. Reuse that prepared version for the same attempt using raw build/update commands, not bump wrappers. A failed submission can reuse its successful build. A store build-number conflict or changed native source requires a deliberate new build decision. Keep the starter's existing root version helpers; the legacy scripts bundled here target another layout and must not be copied over them.
 
-**Android only:**
-```bash
-npm run build:production:android
-```
-
-**Both platforms:**
-```bash
-npm run build:production:ios && npm run build:production:android
-```
-
----
-
-### 3. Store Submission
-
-Submit the latest build to the App Store / Play Store. Run **after** a successful production build.
-
-**iOS:**
-```bash
-npm run submit:production:ios
-```
-
-**Android:**
-```bash
-npm run submit:production:android
-```
-
----
-
-### 4. Full Release (Build + Submit)
-
-**iOS:**
-```bash
-npm run build:production:ios && npm run submit:production:ios
-```
-
-**Android:**
-```bash
-npm run build:production:android && npm run submit:production:android
-```
-
----
-
-### 5. Simulator Build
-
-For local development/testing — not for store submission.
-
-**iOS simulator:**
-```bash
-npm run build:simulator:ios
-```
-
-**Android simulator:**
-```bash
-npm run build:simulator:android
-```
-
----
-
-## Setup in a New Project
-
-Copy the bundled scripts into the project:
-```bash
-cp <skill-path>/scripts/bump-app-version.js scripts/
-cp <skill-path>/scripts/increment-update-version.js scripts/
-cp <skill-path>/scripts/commit-file.js scripts/
-```
-
-Add these npm scripts to `package.json`:
-```json
-"update": "node scripts/increment-update-version.js && npx eas update",
-"build:production:ios": "node scripts/bump-app-version.js && npx eas build --platform ios --profile production",
-"build:production:android": "node scripts/bump-app-version.js && npx eas build --platform android --profile production",
-"submit:production:ios": "npx eas submit --platform ios --profile production",
-"submit:production:android": "npx eas submit --platform android --profile production",
-"build:simulator:ios": "npx eas build --platform ios --profile development-simulator",
-"build:simulator:android": "npx eas build -p android --profile development-simulator"
-```
-
-Ensure `constants/version.ts` exports `UPDATE_VERSION`:
-```ts
-export const UPDATE_VERSION = 1;
-```
-
----
-
-## Version Bump Logic
-
-| Script | What gets bumped | File |
-|--------|-----------------|------|
-| `npm run update` | `UPDATE_VERSION` (integer, +1) | `constants/version.ts` |
-| `npm run build:production:*` | `version` patch (semver x.y.z+1) | `app.json` |
-
-Both scripts commit their own bump automatically, so git history tracks releases accurately. The commit is pathspec-limited to the version file, so unrelated working-tree changes stay uncommitted; if the commit fails the script exits non-zero and the `&& eas ...` step never runs. Outside a git repo the commit is skipped with a log line.
-
-## Checklist Before Releasing
-
-- [ ] All changes committed and pushed
-- [ ] Tested on a physical device or simulator
-- [ ] `eas.json` profiles are correct for the target environment
+Record observed results in LAUNCH.md. End with the relevant link, exactly what was verified, and one next action. Continue within existing publishing authorization; resolve ambiguous destinations before external changes. Unavailable account, store-review or device actions remain explicit pending milestones.
