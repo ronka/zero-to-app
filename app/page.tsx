@@ -86,18 +86,18 @@ export default async function Home() {
       <section id="top" className="relative min-h-[880px] border-b border-[var(--line)] pt-32 md:min-h-[820px] md:pt-40">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_16%,rgba(199,255,74,.13),transparent_28%),radial-gradient(circle_at_78%_35%,rgba(109,216,255,.08),transparent_30%)]" />
         <div className="absolute inset-0 opacity-[0.08] [background-image:linear-gradient(#fff_1px,transparent_1px),linear-gradient(90deg,#fff_1px,transparent_1px)] [background-size:64px_64px] [mask-image:linear-gradient(to_bottom,black,transparent_85%)]" />
-        <div className="relative mx-auto grid max-w-7xl items-center gap-16 px-5 pb-20 md:px-8 lg:grid-cols-[1.08fr_.92fr] lg:gap-12">
+        <div className="relative mx-auto grid max-w-7xl items-center gap-16 px-5 pb-20 md:px-8 lg:grid-cols-[1.16fr_.84fr] lg:gap-10">
           <div>
-            <div className="mb-8 inline-flex rotate-[-1deg] items-center gap-2 rounded-md bg-[var(--paper)] px-4 py-2 text-sm font-bold text-[var(--ink)] shadow-[5px_5px_0_var(--coral)]">
+            <div className="mb-10 inline-flex rotate-[-1deg] items-center gap-2 rounded-md bg-[var(--paper)] px-4 py-2 text-sm font-bold text-[var(--ink)] shadow-[5px_5px_0_var(--coral)]">
               <span className="h-2 w-2 animate-pulse rounded-full bg-[#149646]" />
               תבנית AI-first ל־Web ול־Mobile
             </div>
-            <h1 className="max-w-4xl text-[clamp(3.7rem,8vw,7.6rem)] font-black leading-[.84] tracking-[-0.065em]">
-              לא רק Starter.
-              <span className="mt-4 block text-[var(--lime)]"><strong className="font-black [font-weight:950] [-webkit-text-stroke:.5px_currentColor]">שותף AI</strong> להתחלה.</span>
+            <h1 className="max-w-5xl text-[clamp(4rem,7.7vw,7.9rem)] font-black leading-[.82] tracking-[-0.072em]">
+              <span className="block">בונים את המוצר</span>
+              <span className="mt-5 block whitespace-nowrap">בימים, <strong className="relative -mx-1 inline-block rotate-[.8deg] bg-[var(--paper)] px-[.14em] pb-[.07em] pt-[.02em] text-[var(--ink)] shadow-[5px_5px_0_var(--coral)]">לא בשבועות.</strong></span>
             </h1>
-            <p className="mt-9 max-w-2xl text-lg leading-8 text-zinc-300 md:text-xl md:leading-9">
-              שתי תבניות, שני repos — אחת ל־Next.js ואחת ל־Expo. משכפלים את מה שמתאים, מריצים <span className="rounded bg-white/10 px-2 py-1 font-mono text-[.9em] text-[var(--lime)]" dir="ltr">/setup</span>, וה־AI בונה לכם בסיס מדויק עם דאטה, אנליטיקה ושפה שכבר עובדים יחד.
+            <p className="mt-11 max-w-2xl text-lg leading-8 text-zinc-300 md:text-xl md:leading-9">
+              כל מה שצריך כדי לבנות SaaS, כלי AI או אפליקציה — עם בסיס שעובד מהיום הראשון. בוחרים Web או Mobile, מריצים <span className="rounded bg-white/10 px-2 py-1 font-mono text-[.9em] text-[var(--lime)]" dir="ltr">/setup</span>, ומתחילים מהחלק שבאמת שלכם.
             </p>
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
               <a href="#access" className="group inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[var(--lime)] px-7 text-base font-black text-[var(--ink)] shadow-[0_0_35px_rgba(199,255,74,.2)] transition hover:-translate-y-1 hover:shadow-[0_8px_0_#617d1e]">
