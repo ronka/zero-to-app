@@ -34,7 +34,7 @@ export function MagicLinkForm({ buttonLabel = "שלחו לי קישור כניס
         autoComplete="email"
         required
       />
-      <div className="absolute -left-[10000px]" aria-hidden="true">
+      <div className="sr-only" aria-hidden="true">
         <label htmlFor="website">Website</label>
         <input id="website" name="website" tabIndex={-1} autoComplete="off" />
       </div>
