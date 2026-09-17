@@ -37,3 +37,20 @@ test('setup offers and configures the Resend MCP server for both platforms', () 
     assert.match(initializer, /https:\/\/mcp\.resend\.com\/mcp/);
   }
 });
+
+test('setup preserves the template layout instead of writing a minimal shell', () => {
+  const setupTemplate = readFileSync(new URL('../sources/skills/setup/SKILL.md.tmpl', import.meta.url), 'utf8');
+  const initializerTemplate = readFileSync(new URL('../sources/scripts/init-project.mjs.tmpl', import.meta.url), 'utf8');
+
+  for (const platform of ['mobile', 'web']) {
+    const setup = renderPlatformTemplate(setupTemplate, platform);
+    const initializer = renderPlatformTemplate(initializerTemplate, platform);
+
+    assert.match(setup, /## Preserve the template layout/);
+    assert.doesNotMatch(initializer, /writeAppShell|writeSiteShell/);
+  }
+
+  const webInitializer = renderPlatformTemplate(initializerTemplate, 'web');
+  assert.doesNotMatch(webInitializer, /app\/page\.tsx/);
+  assert.doesNotMatch(webInitializer, /rmSync\(resolve\(root, "app\/landing-content\.ts"\)/);
+});

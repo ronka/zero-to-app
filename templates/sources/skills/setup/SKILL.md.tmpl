@@ -74,13 +74,14 @@ Last updated: YYYY-MM-DD
 - [ ] Repository identity and product context applied
 - [ ] `DESIGN.md` created and brand colors applied
 {{#mobile}}
-- [ ] App shell personalized
+- [ ] Template screens personalized with placeholder copy
 - [x] App version display and hidden debug menu foundation included
 - [ ] RTL layout handled
 - [ ] Brand asset decision recorded
 {{/mobile}}
 {{#web}}
 - [ ] Site identity, metadata, locale, and direction personalized
+- [ ] Template landing sections personalized with placeholder copy
 {{/web}}
 - [ ] Neon MCP offered and decision applied
 - [ ] PostHog MCP offered and decision applied
@@ -155,12 +156,27 @@ Setup establishes identity and foundations; it does not define the product. Do n
 Derive the lowercase npm package name from the product name and never ask the user to choose it. Generate an accessible five-color palette that fits the product description; do not ask about colors. Record and apply primary, accent, background, surface, and text colors, then verify contrast. Use another provider only when the user explicitly requests it. Ask a follow-up only when the missing answer would materially change the product and cannot safely be inferred.
 {{/web}}
 
-{{#mobile}}
-Keep the app shell in the primary product locale. Translate the supplied one-sentence description into that locale when needed without asking another question. For Hebrew, use Hebrew navigation, settings, and system-facing shell labels; product names remain unchanged unless the user supplied a localized name.
-{{/mobile}}
 {{#web}}
 Setup establishes identity and foundations; it does not define the product. Do not generate or present a synthesized brief, audience, problem, outcome, feature list, roadmap, marketing claims, or implementation plan. Preserve details the user volunteers, but leave product and landing-page development for the next task.
 {{/web}}
+
+## Preserve the template layout
+
+Setup renames and configures the template; it never redesigns or strips it. Change only identity, colors, locale, direction, and visible copy.
+
+{{#mobile}}
+- Keep every route, screen, tab, component, and style in `src/app` and `src/components`. Do not delete, merge, reorder, or replace screens with a minimal shell.
+- In the home screen, show the product name in the brand badge, use the product name or description as the title, and the description as the subtitle. Replace the starter hint rows, including the `npm run reset-project` row that no longer applies, with neutral placeholder rows in the same structure.
+- Translate tab labels, settings labels, and all other starter-owned visible copy into the primary product locale.
+{{/mobile}}
+{{#web}}
+- Keep every section, component, class name, icon, visual element, and style in `app/page.tsx` and `app/globals.css`. Do not delete, merge, reorder, or replace sections with a minimal shell.
+- Rewrite every value in `app/landing-content.ts` and remove its `SETUP:` comment. Use the product name for brand fields, the supplied description for the headline, and neutral placeholder copy for the rest.
+- Replace hard-coded visible text in `app/page.tsx` (navigation labels, `aria-label` text, section kickers, the CTA eyebrow, and the hero dashboard mock) with placeholder copy in the primary product locale. Replace the `0→` brand mark with the product's initial.
+{{/web}}
+- Placeholder copy is plainly labeled for replacement, written in the primary product locale, and never pretends to be real: use obvious placeholders such as "Feature one — describe the benefit here", not invented features, benefits, prices, metrics, user counts, customer names, or testimonials. Stats and testimonials stay as clearly labeled placeholders.
+- Translate the supplied one-sentence description into the primary product locale when needed without asking another question. Product names remain unchanged unless the user supplied a localized name.
+
 
 ## Apply
 
@@ -200,7 +216,7 @@ Write the answers to `.starter-init.json` using this shape:
 {{#mobile}}
 Remove `.starter-init.json` after the command succeeds and update `SETUP.md` after each completed stage. If the user supplied brand assets, copy them into `assets/images` and update every relevant `app.json` icon or splash path. Otherwise record the deferred assets in the decisions and check only the brand asset decision item; do not pretend product branding is complete.
 
-Confirm that `DESIGN.md` contains the chosen palette, `PRODUCT.brandColors` is available to the app, the splash and branded UI use the intended roles, and text and controls meet WCAG AA contrast before checking the design task. Confirm the generated shell uses only the supplied product name and description; do not add product features. Preserve and verify the preinstalled app-version foundation. Complete the `RTL layout handled` checkpoint using the rule above; a Hebrew conversation alone is not a reason to apply RTL.
+Confirm that `DESIGN.md` contains the chosen palette, `PRODUCT.brandColors` is available to the app, the splash and branded UI use the intended roles, and text and controls meet WCAG AA contrast before checking the design task. Confirm every template screen and tab still exists, visible copy uses only the product name, the description, and labeled placeholders in the primary product locale, and no product features were added. Apply the palette to `primary`, `primarySoft`, and `accent` in `src/constants/theme.ts` for both color schemes while keeping WCAG AA contrast. Preserve and verify the preinstalled app-version foundation. Complete the `RTL layout handled` checkpoint using the rule above; a Hebrew conversation alone is not a reason to apply RTL.
 {{/mobile}}
 {{#web}}
 Run `node scripts/init-project.mjs .starter-init.json`, then remove `.starter-init.json`. Update `SETUP.md` with the applied decisions and check each completed stage before moving on.
@@ -210,7 +226,7 @@ Run `node scripts/init-project.mjs .starter-init.json`, then remove `.starter-in
 The initializer owns the Expo Go fallback in `src/utils/rtl.ts`. Preserve `export const isRTL = isExpoGo ? <fallback> : I18nManager.isRTL;` and set `<fallback>` to `true` for an RTL product or `false` for an LTR product. Native builds must continue to use `I18nManager.isRTL`. When applying the `rtl-layout` skill, use its directional layout guidance but keep the starter-owned `src/utils/rtl.ts`; do not copy the skill's `reference/rtl.ts` over it, because the starter helpers also mirror correctly in Expo Go where native RTL is off. For Hebrew, verify `app.config.js` enables `expo-localization` with `supportsRTL` and `forcesRTL`, the root `LocaleProvider` receives `rtl`, and all starter-owned visible shell copy is Hebrew.
 {{/mobile}}
 {{#web}}
-Confirm that `DESIGN.md` contains the chosen palette, its roles are applied in `app/globals.css`, and text and controls meet WCAG AA contrast before checking the design task. Personalize only the site identity, metadata, locale, direction, and supplied name and description. Keep product-development sections out of the initialized page rather than inventing their content. Preserve the framework-maintained block in `AGENTS.md`.
+Confirm that `DESIGN.md` contains the chosen palette, its roles are applied in `app/globals.css`, and text and controls meet WCAG AA contrast before checking the design task. Personalize the site identity, metadata, locale, and direction, and fill every template section with the supplied name, description, and labeled placeholders as described in Preserve the template layout. Confirm all template sections still render. Preserve the framework-maintained block in `AGENTS.md`.
 {{/web}}
 
 {{#mobile}}
@@ -221,10 +237,10 @@ Run `npm run lint` and `npm run build`. Resolve failures caused by initializatio
 {{/web}}
 
 {{#mobile}}
-Search tracked text, excluding `.git`, build output, dependencies, binary assets, and both copies of the setup-only `setup` skill, for `zero-to-app`, `zero-to-saas`, `starter app`, `Welcome to Expo`, `Expo Starter`, and the old package name. Resolve every remaining match that would make the repository feel like a template.
+Search tracked text, excluding `.git`, build output, dependencies, binary assets, and both copies of the setup-only `setup` skill, and `SETUP.md`, case-insensitively for `zero-to-app`, `Zero to App`, `zero-to-saas`, `starter app`, `Welcome to Expo`, `Expo Starter`, and the old package name. Resolve every remaining match that would make the repository feel like a template.
 {{/mobile}}
 {{#web}}
-Search tracked text, excluding `.git`, build output, dependencies, and both copies of the setup-only `setup` skill, for `zero-to-app`, `zero-to-saas`, `starter template`, `Create Next App`, and the old package name. Resolve every remaining match that would make the repository feel like a template.
+Search tracked text, excluding `.git`, build output, dependencies, and both copies of the setup-only `setup` skill, and `SETUP.md`, case-insensitively for `zero-to-app`, `Zero to App`, `zero-to-saas`, `starter template`, `Create Next App`, and the old package name. Resolve every remaining match that would make the repository feel like a template.
 {{/web}}
 
 {{#mobile}}
@@ -239,11 +255,11 @@ Finish in the user's conversation language with a compact Zero to App handoff. K
 1. A heading that says the product is ready and includes `🚀`.
 2. `Zero to App setup is complete.` translated naturally when needed.
 {{#mobile}}
-3. **Created:** one or two sentences covering the app identity, minimal shell, selected integrations, app-version/debug foundation, and successful checks.
+3. **Created:** one or two sentences covering the app identity, preserved template screens, selected integrations, app-version/debug foundation, and successful checks.
 4. **Continue:** two or three concrete actions, starting with `npm run ios` or `npm run android`; include only authentication, EAS linking, or brand assets still required.
 {{/mobile}}
 {{#web}}
-3. **Created:** one or two sentences covering the site identity, minimal shell, selected integrations, and successful checks.
+3. **Created:** one or two sentences covering the site identity, preserved landing page, selected integrations, and successful checks.
 4. **Continue:** two or three concrete actions, starting with `npm run dev`; include only authentication or configuration still required.
 {{/web}}
 5. `Good luck shipping <product name>! ✨` translated naturally when needed.
