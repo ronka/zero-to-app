@@ -21,7 +21,7 @@ Duplicate Grow notifications do not duplicate purchases or entitlements. Email f
 Copy `.env.example` to `.env.local` and configure all required values. Then apply the database migrations in order and run the app:
 
 ```bash
-node --env-file=.env.local --input-type=module -e 'import { readFileSync } from "node:fs"; import pg from "pg"; const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL }); for (const file of ["db/migrations/001_grow_purchases.sql", "db/migrations/002_github_access.sql", "db/migrations/003_zero_to_app_entitlements.sql"]) await pool.query(readFileSync(file, "utf8")); await pool.end();'
+node --env-file=.env.local --input-type=module -e 'import { readFileSync } from "node:fs"; import pg from "pg"; const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL }); for (const file of ["db/migrations/001_grow_purchases.sql", "db/migrations/002_github_access.sql", "db/migrations/003_zero_to_app_entitlements.sql", "db/migrations/004_login_email_deliveries.sql"]) await pool.query(readFileSync(file, "utf8")); await pool.end();'
 npm run dev
 ```
 

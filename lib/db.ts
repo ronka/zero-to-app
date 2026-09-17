@@ -1,15 +1,16 @@
 import type { PoolClient } from "pg";
 
-import { database } from "./database";
-import { GROW_PRODUCTS, productForEntitlement, type GrowProcessId } from "./grow/products";
 import type {
   AccessEmailDelivery,
-  GrowPurchase,
-  PersistGrowPurchaseResult,
-} from "./grow/webhook";
+  AccessEmailDeliveryKind,
+} from "./access/types";
+import { database } from "./database";
+import { GROW_PRODUCTS, productForEntitlement, type GrowProcessId } from "./grow/products";
+import type { GrowPurchase, PersistGrowPurchaseResult } from "./grow/webhook";
 
 type DeliveryRow = {
   id: string;
+  kind: AccessEmailDeliveryKind;
   payer_email: string;
   payer_name: string;
   payment_link_process_id: string;
@@ -21,6 +22,7 @@ function deliveryFromRow(row: DeliveryRow): AccessEmailDelivery {
 
   return {
     id: row.id,
+    kind: row.kind,
     payerEmail: row.payer_email,
     payerName: row.payer_name,
     callbackPath: product.callbackPath,
@@ -122,7 +124,7 @@ export async function persistGrowPurchase(
     }
 
     const delivery = await client.query<DeliveryRow>(
-      `SELECT d.id, p.payer_email, p.payer_name, p.payment_link_process_id
+      `SELECT d.id, d.kind, p.payer_email, p.payer_name, p.payment_link_process_id
        FROM access_email_deliveries d
        JOIN purchases p ON p.id = d.purchase_id
        WHERE d.purchase_id = $1
@@ -158,7 +160,7 @@ export async function claimAccessEmailDelivery(id: string) {
          d.state IN ('pending', 'failed')
          OR (d.state = 'sending' AND d.last_attempt_at < now() - interval '10 minutes')
        )
-     RETURNING d.id, p.payer_email, p.payer_name, p.payment_link_process_id`,
+     RETURNING d.id, d.kind, p.payer_email, p.payer_name, p.payment_link_process_id`,
     [id],
   );
 
@@ -214,10 +216,10 @@ export async function queueAccessEmailForBuyer(email: string) {
 
     const delivery = await client.query<DeliveryRow>(
       `INSERT INTO access_email_deliveries (purchase_id, kind, state)
-       VALUES ($1, 'initial-access', 'pending')
+       VALUES ($1, 'login', 'pending')
        ON CONFLICT (purchase_id, kind) DO UPDATE
        SET state = 'pending', last_error = NULL, updated_at = now()
-       RETURNING id, $2::text AS payer_email, $3::text AS payer_name,
+       RETURNING id, kind, $2::text AS payer_email, $3::text AS payer_name,
                  $4::text AS payment_link_process_id`,
       [row.id, row.payer_email, row.payer_name, row.payment_link_process_id],
     );

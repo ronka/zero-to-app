@@ -1,5 +1,6 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 
+import type { AccessEmailDelivery } from "../access/types";
 import { GROW_PRODUCTS, type GrowProcessId } from "./products";
 
 type JsonRecord = Record<string, unknown>;
@@ -20,14 +21,6 @@ export type GrowPurchase = {
   processId: GrowProcessId;
   productName: string;
   providerTransactionId: string;
-};
-
-export type AccessEmailDelivery = {
-  id: string;
-  payerEmail: string;
-  payerName: string;
-  callbackPath: string;
-  productName: string;
 };
 
 export type PersistGrowPurchaseResult = {

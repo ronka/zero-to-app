@@ -5,13 +5,13 @@ import {
   markAccessEmailFailed,
   queueAccessEmailForBuyer,
 } from "../db";
-import type { AccessEmailDelivery } from "../grow/webhook";
 import { dispatchClaimedAccessEmail } from "./dispatch";
 import {
   MAGIC_LINK_GENERIC_RESPONSE,
   requestBuyerMagicLink,
   type PublicMagicLinkDependencies,
 } from "./request";
+import type { AccessEmailDelivery } from "./types";
 
 export { MAGIC_LINK_GENERIC_RESPONSE, requestBuyerMagicLink } from "./request";
 
@@ -35,6 +35,7 @@ export async function dispatchAccessEmail(delivery: AccessEmailDelivery) {
           errorCallbackURL: "/auth/error",
           metadata: {
             deliveryId: claimed.id,
+            deliveryKind: claimed.kind,
             productName: claimed.productName,
           },
         },

@@ -12,8 +12,8 @@ import {
   handleGrowWebhook,
   parseGrowRequest,
   validateGrowWebhook,
-  type AccessEmailDelivery,
 } from "../lib/grow/webhook";
+import type { AccessEmailDelivery } from "../lib/access/types";
 
 const PROCESS_TOKEN = "merchant-process-token";
 const tokenForProcess = () => PROCESS_TOKEN;
@@ -48,6 +48,7 @@ function requestFor(payload = validPayload(), contentType = "application/json") 
 
 const delivery: AccessEmailDelivery = {
   id: "delivery-1",
+  kind: "initial-access",
   callbackPath: "/access",
   payerEmail: "buyer@example.com",
   payerName: "ישראל ישראלי",
@@ -226,6 +227,56 @@ test("public resend is enumeration-safe, rate-limited, and entitlement-gated", a
   assert.equal(dispatched, 1);
 });
 
+test("purchase and login magic links use accurate, distinct copy", async () => {
+  const messages: Array<{ subject: string; text: string; html: string }> = [];
+  const dependencies = {
+    from: "Zero to App <access@zerotoapp.co.il>",
+    provider: {
+      send: async (message: {
+        subject: string;
+        text: string;
+        html: string;
+      }) => {
+        messages.push(message);
+        return { data: { id: `message-${messages.length}` }, error: null };
+      },
+    },
+    markSent: async () => {},
+  };
+
+  await deliverMagicLinkEmail(
+    {
+      email: "buyer@example.com",
+      url: "https://example.com/api/auth/magic-link/verify?token=initial",
+      metadata: {
+        deliveryId: "initial-delivery",
+        deliveryKind: "initial-access",
+        productName: "Zero to App",
+      },
+    },
+    dependencies,
+  );
+  await deliverMagicLinkEmail(
+    {
+      email: "buyer@example.com",
+      url: "https://example.com/api/auth/magic-link/verify?token=login",
+      metadata: {
+        deliveryId: "login-delivery",
+        deliveryKind: "login",
+        productName: "Zero to App",
+      },
+    },
+    dependencies,
+  );
+
+  assert.match(messages[0].subject, /גישה/);
+  assert.match(messages[0].text, /התשלום התקבל/);
+  assert.match(messages[0].html, /התשלום התקבל/);
+  assert.match(messages[1].subject, /כניסה/);
+  assert.doesNotMatch(messages[1].text, /תשלום|רכישה/);
+  assert.doesNotMatch(messages[1].html, /תשלום|רכישה/);
+});
+
 test("Resend returned errors are delivery failures and the copy matches expiry", async () => {
   let marked = false;
   await assert.rejects(
@@ -233,7 +284,11 @@ test("Resend returned errors are delivery failures and the copy matches expiry",
       {
         email: "buyer@example.com",
         url: "https://example.com/api/auth/magic-link/verify?token=secret",
-        metadata: { deliveryId: "delivery-1", productName: "Zero to App" },
+        metadata: {
+          deliveryId: "delivery-1",
+          deliveryKind: "initial-access",
+          productName: "Zero to App",
+        },
       },
       {
         from: "Zero to App <access@zerotoapp.co.il>",

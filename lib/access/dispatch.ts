@@ -1,4 +1,4 @@
-import type { AccessEmailDelivery } from "../grow/webhook";
+import type { AccessEmailDelivery } from "./types";
 
 export async function dispatchClaimedAccessEmail(
   candidate: AccessEmailDelivery,

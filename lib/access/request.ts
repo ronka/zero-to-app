@@ -1,7 +1,7 @@
 import { createHmac } from "node:crypto";
 
-import type { AccessEmailDelivery } from "../grow/webhook";
 import { isPlausibleEmail, normalizeEmail } from "./email";
+import type { AccessEmailDelivery } from "./types";
 
 export const MAGIC_LINK_GENERIC_RESPONSE = {
   ok: true,
