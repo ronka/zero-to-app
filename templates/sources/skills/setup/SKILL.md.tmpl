@@ -19,7 +19,7 @@ description: Set up this web repository from a product name and description. Run
 This is a one-time workflow for an iOS and Android app. Match the language the user writes in. Treat conversation language, product locale, and UI direction as three independent choices. Keep Expo Web out of scope. Add a separate backend or API only when the user explicitly requests one.
 {{/mobile}}
 {{#web}}
-This is a one-time workflow. Match the language the user writes in. Treat conversation language, product locale, and UI direction as three independent choices.
+This is a one-time workflow. Match the language the user writes in. If any user message contains Hebrew, answer only in Hebrew from that reply onward until the user explicitly asks for another language. Treat conversation language, product locale, and UI direction as three independent choices.
 {{/web}}
 
 ## Resume ledger
@@ -81,7 +81,7 @@ Last updated: YYYY-MM-DD
 {{/mobile}}
 {{#web}}
 - [ ] Site identity, metadata, locale, and direction personalized
-- [ ] Template landing sections personalized with placeholder copy
+- [ ] Template landing sections personalized with contextual draft copy
 {{/web}}
 - [ ] Neon MCP offered and decision applied
 - [ ] PostHog MCP offered and decision applied
@@ -157,7 +157,7 @@ Derive the lowercase npm package name from the product name and never ask the us
 {{/web}}
 
 {{#web}}
-Setup establishes identity and foundations; it does not define the product. Do not generate or present a synthesized brief, audience, problem, outcome, feature list, roadmap, marketing claims, or implementation plan. Preserve details the user volunteers, but leave product and landing-page development for the next task.
+Setup establishes identity, foundations, and a coherent first-pass landing page; it does not finalize the product. Generate provisional positioning and section copy from the user's name and description, using conservative implications only. Keep unsupported features, audiences, outcomes, metrics, prices, testimonials, and marketing claims out of `PRODUCT.md` and do not present inferred details as settled decisions.
 {{/web}}
 
 ## Preserve the template layout
@@ -171,10 +171,15 @@ Setup renames and configures the template; it never redesigns or strips it. Chan
 {{/mobile}}
 {{#web}}
 - Keep every section, component, class name, icon, visual element, and style in `app/page.tsx` and `app/globals.css`. Do not delete, merge, reorder, or replace sections with a minimal shell.
-- Rewrite every value in `app/landing-content.ts` and remove its `SETUP:` comment. Use the product name for brand fields, the supplied description for the headline, and neutral placeholder copy for the rest.
-- Replace hard-coded visible text in `app/page.tsx` (navigation labels, `aria-label` text, section kickers, the CTA eyebrow, and the hero dashboard mock) with placeholder copy in the primary product locale. Replace the `0→` brand mark with the product's initial.
+- Rewrite every value in `app/landing-content.ts` and remove its `SETUP:` comment. Use the product name and supplied description as factual anchors, then generate natural contextual draft copy for every other field based on what the user wrote.
+- Replace hard-coded visible text in `app/page.tsx` (navigation labels, `aria-label` text, section kickers, the CTA eyebrow, and the hero dashboard mock) with contextual draft copy in the primary product locale. Replace the `0→` brand mark with the product's initial.
 {{/web}}
+{{#mobile}}
 - Placeholder copy is plainly labeled for replacement, written in the primary product locale, and never pretends to be real: use obvious placeholders such as "Feature one — describe the benefit here", not invented features, benefits, prices, metrics, user counts, customer names, or testimonials. Stats and testimonials stay as clearly labeled placeholders.
+{{/mobile}}
+{{#web}}
+- Contextual draft copy should read like a plausible first version of this specific product, not generic labels such as "Feature one", "placeholder", "coming soon", or "replace this text". Infer useful wording from the supplied description without inventing facts. Keep numbers non-quantitative, make any testimonial-shaped section an aspirational product statement rather than a fabricated customer quote, and use CTA labels and links that are safe before the real product flow exists.
+{{/web}}
 - Translate the supplied one-sentence description into the primary product locale when needed without asking another question. Product names remain unchanged unless the user supplied a localized name.
 
 
@@ -226,7 +231,7 @@ Run `node scripts/init-project.mjs .starter-init.json`, then remove `.starter-in
 The initializer owns the Expo Go fallback in `src/utils/rtl.ts`. Preserve `export const isRTL = isExpoGo ? <fallback> : I18nManager.isRTL;` and set `<fallback>` to `true` for an RTL product or `false` for an LTR product. Native builds must continue to use `I18nManager.isRTL`. When applying the `rtl-layout` skill, use its directional layout guidance but keep the starter-owned `src/utils/rtl.ts`; do not copy the skill's `reference/rtl.ts` over it, because the starter helpers also mirror correctly in Expo Go where native RTL is off. For Hebrew, verify `app.config.js` enables `expo-localization` with `supportsRTL` and `forcesRTL`, the root `LocaleProvider` receives `rtl`, and all starter-owned visible shell copy is Hebrew.
 {{/mobile}}
 {{#web}}
-Confirm that `DESIGN.md` contains the chosen palette, its roles are applied in `app/globals.css`, and text and controls meet WCAG AA contrast before checking the design task. Personalize the site identity, metadata, locale, and direction, and fill every template section with the supplied name, description, and labeled placeholders as described in Preserve the template layout. Confirm all template sections still render. Preserve the framework-maintained block in `AGENTS.md`.
+Confirm that `DESIGN.md` contains the chosen palette, its roles are applied in `app/globals.css`, and text and controls meet WCAG AA contrast before checking the design task. Personalize the site identity, metadata, locale, and direction, and fill every template section with the supplied name, description, and contextual draft copy as described in Preserve the template layout. Confirm all template sections still render and no visible copy contains generic replacement labels. Preserve the framework-maintained block in `AGENTS.md`.
 {{/web}}
 
 {{#mobile}}

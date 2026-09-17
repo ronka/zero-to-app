@@ -54,3 +54,15 @@ test('setup preserves the template layout instead of writing a minimal shell', (
   assert.doesNotMatch(webInitializer, /app\/page\.tsx/);
   assert.doesNotMatch(webInitializer, /rmSync\(resolve\(root, "app\/landing-content\.ts"\)/);
 });
+
+test('web setup writes contextual draft copy and switches to Hebrew when the user does', () => {
+  const setupTemplate = readFileSync(new URL('../sources/skills/setup/SKILL.md.tmpl', import.meta.url), 'utf8');
+  const webSetup = renderPlatformTemplate(setupTemplate, 'web');
+  const mobileSetup = renderPlatformTemplate(setupTemplate, 'mobile');
+
+  assert.match(webSetup, /If any user message contains Hebrew, answer only in Hebrew/);
+  assert.match(webSetup, /generate natural contextual draft copy/);
+  assert.match(webSetup, /not generic labels such as "Feature one", "placeholder", "coming soon", or "replace this text"/);
+  assert.doesNotMatch(mobileSetup, /If any user message contains Hebrew, answer only in Hebrew/);
+  assert.match(mobileSetup, /Placeholder copy is plainly labeled for replacement/);
+});
