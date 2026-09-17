@@ -2,14 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   async redirects() {
-    return [
-      {
-        source: "/:path*",
-        has: [{ type: "host", value: "www.zerotoapp.co.il" }],
-        destination: "https://zerotoapp.co.il/:path*",
-        permanent: true,
-      },
-    ];
+    return ["www.zerotoapp.co.il", "zero-to-app-ten.vercel.app"].map((host) => ({
+      source: "/:path*",
+      has: [{ type: "host" as const, value: host }],
+      destination: "https://zerotoapp.co.il/:path*",
+      permanent: true,
+    }));
   },
 };
 
