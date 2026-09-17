@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 
 import { VideoGuidePage } from "../_components/video-guide-page";
+import {
+  githubTemplateVideo,
+  installToolsVideo,
+  serviceAccountsLinks,
+  workingWithAgentVideo,
+} from "../_lib/shared-videos";
 import type { TutorialVideo } from "../_lib/videos";
 
 export const metadata: Metadata = {
@@ -9,54 +15,157 @@ export const metadata: Metadata = {
 };
 
 const videos = [
+  installToolsVideo,
+  githubTemplateVideo,
   {
-    title: "מתחילים עם תבנית ה־Mobile",
+    id: "mobile-setup",
+    title: "מריצים את פקודת setup ומחברים שירותים",
     description: `
-זהו סרטון זמני עד להעלאת המדריך המלא.
+מריצים את \`/setup\` והופכים את התבנית לאפליקציה שלכם.
 
-במדריך נלמד איך:
+בסרטון:
 
-- ליצור repo חדש מהתבנית
-- להריץ את \`$setup\`
-- להפעיל את האפליקציה ב־iOS או Android
+- שם האפליקציה, תיאור, שפה, כיוון וצבעים
+- מה זה Neon, PostHog ו־Resend, ומתי האפליקציה צריכה אותם
+- פתיחת חשבונות וחיבור ה־MCP שלהם לסוכן
+- איך \`SETUP.md\` שומר את ההתקדמות אם עוצרים באמצע
+
+**בסוף הסרטון:** הפרויקט מותאם לאפליקציה שלכם.
     `,
-    videoUrl: "https://youtu.be/M7lc1UVf-VE?placeholder=mobile-start",
+    links: serviceAccountsLinks,
   },
   {
-    title: "מריצים setup ומתאימים את האפליקציה",
+    id: "mobile-expo-run",
+    title: "מכירים את Expo ומריצים על הטלפון",
     description: `
-זהו סרטון זמני עד להעלאת המדריך המלא.
+בסרטון:
 
-נגדיר שם, שפה, מזהי iOS ו־Android וצבעי מותג, ואז נפעיל את האפליקציה בסימולטור.
+- מה זה Expo ו־EAS, ולמה משתמשים בהם
+- פתיחת חשבון Expo
+- הרצה בסימולטור ועל הטלפון
+- ההבדל בין Expo Go ל־development build, ולמה רכישות לא עובדות ב־Expo Go
+
+**בסוף הסרטון:** האפליקציה רצה על הטלפון שלכם.
     `,
-    videoUrl: "https://youtu.be/M7lc1UVf-VE?placeholder=mobile-setup",
+    links: [
+      { label: "פתיחת חשבון Expo", href: "https://expo.dev/signup" },
+      { label: "Expo Go", href: "https://expo.dev/go" },
+      {
+        label: "מה זה development build",
+        href: "https://docs.expo.dev/develop/development-builds/introduction/",
+      },
+      { label: "מה זה EAS", href: "https://docs.expo.dev/eas/" },
+      { label: "Expo MCP", href: "https://docs.expo.dev/mcp/" },
+    ],
+  },
+  workingWithAgentVideo,
+  {
+    id: "mobile-developer-accounts",
+    title: "פותחים חשבונות מפתח ב־Apple וב־Google",
+    description: `
+**כדאי להתחיל מוקדם:** אישור החשבונות יכול לקחת כמה ימים, ובלעדיהם אי אפשר להגדיר רכישות או לפרסם.
+
+בסרטון:
+
+- הרשמה ל־Apple Developer Program
+- חתימה על הסכם Paid Apps ב־App Store Connect (חובה לרכישות)
+- פתיחת חשבון Google Play Console
+- דרישת הבדיקה הסגורה בחשבון Google אישי חדש: 12 בודקים במשך 14 יום
+
+**בסוף הסרטון:** יש לכם חשבונות מפתח פעילים בשתי החנויות.
+    `,
+    links: [
+      { label: "הרשמה ל־Apple Developer Program", href: "https://developer.apple.com/programs/enroll/" },
+      { label: "App Store Connect", href: "https://appstoreconnect.apple.com/" },
+      {
+        label: "Apple — חתימה על הסכמים",
+        href: "https://developer.apple.com/help/app-store-connect/manage-agreements/sign-and-update-agreements",
+      },
+      { label: "פתיחת חשבון Google Play Console", href: "https://play.google.com/console/signup" },
+      {
+        label: "Google Play — דרישות בדיקה לחשבון אישי חדש",
+        href: "https://support.google.com/googleplay/android-developer/answer/14151465",
+      },
+    ],
   },
   {
-    title: "RTL, ניווט וה־Debug Menu",
+    id: "mobile-payments",
+    title: "מוסיפים רכישות עם RevenueCat ומסתירים את המוצר",
     description: `
-זהו סרטון זמני עד להעלאת המדריך המלא.
+**לפני שמתחילים:** חשבונות מפתח פעילים והסכם Paid Apps חתום (הסרטון הקודם).
 
-נכיר את מבנה הניווט, נבדוק פריסת RTL ונפתח את תפריט הדיבאג דרך שורת הגרסה.
+בסרטון:
+
+- מה זה RevenueCat ולמה משתמשים בו
+- יצירת מוצרים ב־App Store Connect וב־Google Play Console
+- הפעלת הסקיל \`add-app-iap\` ובחירת סוג רכישה: מנוי, רכישה חד־פעמית או קרדיטים
+- מסך תשלום והסתרת התוכן מאחוריו
+- בדיקת רכישה ושחזור רכישות
+
+**בסוף הסרטון:** רק מי ששילם מקבל גישה למוצר.
     `,
-    videoUrl: "https://youtu.be/M7lc1UVf-VE?placeholder=mobile-foundations",
+    links: [
+      { label: "פתיחת חשבון RevenueCat", href: "https://app.revenuecat.com/signup" },
+      {
+        label: "RevenueCat — התקנה ב־Expo",
+        href: "https://www.revenuecat.com/docs/getting-started/installation/expo",
+      },
+      { label: "RevenueCat MCP", href: "https://www.revenuecat.com/docs/tools/mcp" },
+    ],
   },
   {
-    title: "מוסיפים רכישות עם RevenueCat",
+    id: "mobile-publish-ios",
+    title: "מפרסמים ב־App Store",
     description: `
-זהו סרטון זמני עד להעלאת המדריך המלא.
+אומרים לסוכן "publish my app" והסקיל \`expo-publish\` מוביל את התהליך.
 
-נראה איך להתחיל את תהליך ה־IAP, לבחור מודל רכישה ולבדוק שחזור רכישות בצורה בטוחה.
+בסרטון:
+
+- בניית גרסת Production ל־iOS
+- שליחה ל־TestFlight ובדיקה
+- צילומי מסך, תיאור ומדיניות פרטיות
+- שליחה לבדיקה של Apple ומה עושים אם האפליקציה נדחית
+
+**בסוף הסרטון:** האפליקציה נשלחה לבדיקה ב־App Store.
     `,
-    videoUrl: "https://youtu.be/M7lc1UVf-VE?placeholder=mobile-iap",
+    links: [
+      { label: "Expo — שליחה ל־App Store", href: "https://docs.expo.dev/submit/ios/" },
+      { label: "App Store Connect", href: "https://appstoreconnect.apple.com/" },
+    ],
   },
   {
-    title: "מפרסמים עדכון וגרסת Production",
+    id: "mobile-publish-android",
+    title: "מפרסמים ב־Google Play",
     description: `
-זהו סרטון זמני עד להעלאת המדריך המלא.
+בסרטון:
 
-נעבור על EAS Update, בניית גרסאות iOS ו־Android וניהול מספרי הגרסה המובנה בתבנית.
+- בניית גרסת Production ל־Android
+- העלאה לבדיקה סגורה והוספת בודקים
+- דף החנות: צילומי מסך, תיאור ומדיניות פרטיות
+- מעבר ל־Production אחרי תקופת הבדיקה
+
+**בסוף הסרטון:** האפליקציה בדרך ל־Google Play.
     `,
-    videoUrl: "https://youtu.be/M7lc1UVf-VE?placeholder=mobile-publish",
+    links: [
+      { label: "Expo — שליחה ל־Google Play", href: "https://docs.expo.dev/submit/android/" },
+      { label: "Google Play Console", href: "https://play.google.com/console/signup" },
+    ],
+  },
+  {
+    id: "mobile-updates",
+    title: "מעדכנים את האפליקציה אחרי ההשקה",
+    description: `
+בסרטון:
+
+- עדכון OTA עם \`npm run update\`, בלי לעבור שוב בדיקה בחנות
+- מתי חייבים גרסה חדשה בחנות, ואיך עושים את זה עם \`npm run release:prepare\`
+- איך בודקים איזו גרסה מותקנת דרך שורת הגרסה במסך ההגדרות
+
+**בסוף הסרטון:** יודעים מתי מספיק עדכון OTA ומתי צריך גרסה חדשה בחנות.
+    `,
+    links: [
+      { label: "מה זה EAS Update", href: "https://docs.expo.dev/eas-update/introduction/" },
+    ],
   },
 ] satisfies readonly TutorialVideo[];
 
@@ -65,7 +174,7 @@ export default function MobileVideosPage() {
     <VideoGuidePage
       eyebrow="// MOBILE STARTER"
       title="מדריכי Mobile"
-      introduction="כל מה שצריך כדי להתאים את תבנית ה־Expo, להפעיל אותה ולהמשיך עד לפרסום."
+      introduction="מהתקנת הכלים ועד אפליקציה ב־App Store וב־Google Play. כדאי לצפות לפי הסדר."
       storageKey="zero-to-app:videos:mobile:completed"
       videos={videos}
     />

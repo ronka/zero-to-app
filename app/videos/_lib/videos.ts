@@ -2,10 +2,19 @@ export type YouTubeUrl =
   | `https://www.youtube.com/watch?v=${string}`
   | `https://youtu.be/${string}`;
 
+export type UsefulLink = {
+  label: string;
+  href: string;
+};
+
 export type TutorialVideo = {
+  // Stable completion key; keep it unchanged when the title or video changes.
+  id: string;
   title: string;
   description: string;
-  videoUrl: YouTubeUrl;
+  // Leave unset until the video is uploaded to show a "coming soon" placeholder.
+  videoUrl?: YouTubeUrl;
+  links?: readonly UsefulLink[];
 };
 
 type YouTubeEmbedUrl = `https://www.youtube-nocookie.com/embed/${string}`;

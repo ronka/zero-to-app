@@ -1,8 +1,10 @@
+import Link from "next/link";
 import Markdown from "react-markdown";
 
 import {
   getYouTubeEmbedUrl,
   type TutorialVideo,
+  type UsefulLink,
 } from "../_lib/videos";
 import { VideoCompletionButton } from "./video-completion-button";
 
@@ -15,6 +17,44 @@ type VideoGuidePageProps = {
   videos: readonly TutorialVideo[];
 };
 
+function UsefulLinks({ links }: { links: readonly UsefulLink[] }) {
+  return (
+    <div className="mt-6 border-t border-[var(--line)] pt-6">
+      <h3 className="font-mono text-xs font-black text-[var(--coral)]">
+        לינקים שימושיים
+      </h3>
+      <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+        {links.map((link) => {
+          const className =
+            "flex min-h-11 items-center justify-between gap-3 rounded-2xl border border-[var(--line)] px-4 py-2 text-sm font-bold text-zinc-200 transition hover:border-[var(--sky)] hover:text-[var(--sky)]";
+          const external = !link.href.startsWith("/");
+
+          return (
+            <li key={link.href}>
+              {external ? (
+                <a
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={className}
+                >
+                  <span className="min-w-0">{link.label}</span>
+                  <span aria-hidden="true">↗</span>
+                </a>
+              ) : (
+                <Link href={link.href} className={className}>
+                  <span className="min-w-0">{link.label}</span>
+                  <span aria-hidden="true">←</span>
+                </Link>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
 function VideoCard({
   index,
   storageKey,
@@ -24,7 +64,7 @@ function VideoCard({
   storageKey: VideoGuidePageProps["storageKey"];
   video: TutorialVideo;
 }) {
-  const embedUrl = getYouTubeEmbedUrl(video.videoUrl);
+  const embedUrl = video.videoUrl ? getYouTubeEmbedUrl(video.videoUrl) : null;
 
   return (
     <details className="group overflow-hidden rounded-[24px] border border-[var(--line)] bg-[var(--surface)] open:border-zinc-600">
@@ -36,6 +76,11 @@ function VideoCard({
           <span className="text-lg font-black tracking-tight md:text-xl">
             {video.title}
           </span>
+          {!video.videoUrl && (
+            <span className="shrink-0 rounded-full border border-zinc-700 px-2.5 py-0.5 text-xs font-bold text-zinc-500">
+              בקרוב
+            </span>
+          )}
         </span>
         <span
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-zinc-600 text-xl text-zinc-300 transition group-open:rotate-45 group-open:border-[var(--lime)] group-open:text-[var(--lime)]"
@@ -60,18 +105,21 @@ function VideoCard({
           </div>
         ) : (
           <div className="flex aspect-video items-center justify-center bg-black/40 px-6 text-center text-sm font-bold text-zinc-500">
-            כתובת הסרטון אינה תקינה.
+            {video.videoUrl ? "כתובת הסרטון אינה תקינה." : "הסרטון יעלה בקרוב."}
           </div>
         )}
 
         <div className="p-6 md:p-8">
-          <div className="space-y-4 leading-7 text-zinc-400 [&_a]:font-bold [&_a]:text-[var(--sky)] [&_a]:underline [&_code]:rounded [&_code]:bg-white/10 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[var(--lime)] [&_li]:ms-5 [&_li]:list-disc [&_ul]:space-y-2">
+          <div className="space-y-4 leading-7 text-zinc-400 [&_a]:font-bold [&_a]:text-[var(--sky)] [&_a]:underline [&_code]:rounded [&_code]:bg-white/10 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[var(--lime)] [&_code]:[direction:ltr] [&_code]:[unicode-bidi:isolate] [&_li]:ms-5 [&_li]:list-disc [&_ul]:space-y-2">
             <Markdown>{video.description}</Markdown>
           </div>
+          {video.links && video.links.length > 0 && (
+            <UsefulLinks links={video.links} />
+          )}
           <div className="mt-6 border-t border-[var(--line)] pt-6">
             <VideoCompletionButton
               storageKey={storageKey}
-              videoId={`${video.title}:${video.videoUrl}`}
+              videoId={video.id}
             />
           </div>
         </div>
@@ -108,7 +156,7 @@ export function VideoGuidePage({
           <div className="grid gap-8">
             {videos.map((video, index) => (
               <VideoCard
-                key={`${video.title}-${video.videoUrl}`}
+                key={video.id}
                 index={index}
                 storageKey={storageKey}
                 video={video}

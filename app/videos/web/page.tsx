@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 
 import { VideoGuidePage } from "../_components/video-guide-page";
+import {
+  githubTemplateVideo,
+  installToolsVideo,
+  serviceAccountsLinks,
+  workingWithAgentVideo,
+} from "../_lib/shared-videos";
 import type { TutorialVideo } from "../_lib/videos";
 
 export const metadata: Metadata = {
@@ -9,45 +15,106 @@ export const metadata: Metadata = {
 };
 
 const videos = [
+  installToolsVideo,
+  githubTemplateVideo,
   {
-    title: "מתחילים עם תבנית ה־Web",
+    id: "web-setup",
+    title: "מריצים את פקודת setup ומחברים שירותים",
     description: `
-זהו סרטון זמני עד להעלאת המדריך המלא.
+מריצים את \`/setup\` והופכים את התבנית למוצר שלכם.
 
-במדריך נלמד איך:
+בסרטון:
 
-- ליצור repo חדש מהתבנית
-- להריץ את \`$setup\`
-- להפעיל את האתר מקומית
+- שם המוצר, תיאור, שפה, כיוון וצבעים
+- מה זה Neon, PostHog ו־Resend, ולמה צריך כל אחד מהם
+- פתיחת חשבונות וחיבור ה־MCP שלהם לסוכן
+- איך \`SETUP.md\` שומר את ההתקדמות אם עוצרים באמצע
+
+**בסוף הסרטון:** האתר רץ מקומית עם שם המוצר והצבעים שלכם.
     `,
-    videoUrl: "https://www.youtube.com/watch?v=M7lc1UVf-VE&placeholder=web-start",
+    links: serviceAccountsLinks,
+  },
+  workingWithAgentVideo,
+  {
+    id: "web-payments",
+    title: "מוסיפים תשלום עם Grow ומסתירים את המוצר",
+    description: `
+**לפני שמתחילים:** חשבון עסקי ב־Grow ולינק תשלום (payment link) למוצר.
+
+בסרטון:
+
+- יצירת לינק תשלום ב־Grow
+- הפעלת הסקיל \`grow-business-payments\` עם הלינק
+- הסתרת המוצר כך שרק מי ששילם מקבל גישה
+- בדיקת רכישה מקצה לקצה
+
+**בסוף הסרטון:** יש עמוד תשלום, ורק מי ששילם נכנס למוצר.
+    `,
+    links: [{ label: "Grow — פתיחת חשבון עסקי", href: "https://grow.business/" }],
   },
   {
-    title: "מריצים setup ומתאימים את המוצר",
+    id: "web-domain-dns",
+    title: "מחברים דומיין ל־Vercel ומאמתים אותו ב־Resend",
     description: `
-זהו סרטון זמני עד להעלאת המדריך המלא.
+**למה זה חשוב:** בלי דומיין מאומת, Resend שולח מיילים רק לכתובת שלכם, ומשתמשים אמיתיים לא יקבלו אותם.
 
-נעבור על בחירת שם המוצר, השפה, הכיוון והצבעים, ונראה איך \`SETUP.md\` שומר את ההתקדמות.
+בסרטון:
+
+- קניית דומיין
+- חיבור הדומיין לפרויקט ב־Vercel
+- הוספת רשומות ה־DNS ש־Resend מבקש
+- בדיקה שהדומיין אומת ושהמיילים מגיעים
+
+**בסוף הסרטון:** האתר נפתח בדומיין שלכם והמיילים יוצאים ממנו.
     `,
-    videoUrl: "https://www.youtube.com/watch?v=M7lc1UVf-VE&placeholder=web-setup",
+    links: [
+      {
+        label: "Vercel — הוספת דומיין",
+        href: "https://vercel.com/docs/domains/working-with-domains/add-a-domain",
+      },
+      {
+        label: "Resend — אימות דומיין",
+        href: "https://resend.com/docs/dashboard/domains/introduction",
+      },
+      {
+        label: "Resend — הגדרת DNS בדומיין שמנוהל ב־Vercel",
+        href: "https://resend.com/docs/knowledge-base/vercel",
+      },
+    ],
   },
   {
-    title: "מחברים Database, Analytics ו־Email",
+    id: "web-publish",
+    title: "מעלים את האתר לאוויר",
     description: `
-זהו סרטון זמני עד להעלאת המדריך המלא.
+אומרים לסוכן "publish my website" והסקיל \`web-publish\` מוביל את התהליך.
 
-נראה מתי כדאי לחבר את Neon, PostHog ו־Resend ואיך הסוכן משתמש בחיבורים בפרויקט.
+בסרטון:
+
+- פתיחת חשבון Vercel וחיבור ל־GitHub
+- העברת משתני הסביבה (environment variables) ל־Vercel
+- בדיקה שהאתר באוויר עובד
+- איך \`LAUNCH.md\` שומר את ההתקדמות
+
+**בסוף הסרטון:** האתר שלכם באוויר.
     `,
-    videoUrl: "https://www.youtube.com/watch?v=M7lc1UVf-VE&placeholder=web-integrations",
+    links: [
+      { label: "פתיחת חשבון Vercel", href: "https://vercel.com/signup" },
+      { label: "Vercel MCP", href: "https://vercel.com/docs/agent-resources/vercel-mcp" },
+    ],
   },
   {
-    title: "מוסיפים תשלומים עם Grow",
+    id: "web-updates",
+    title: "מעדכנים את האתר אחרי ההשקה",
     description: `
-זהו סרטון זמני עד להעלאת המדריך המלא.
+בסרטון:
 
-נפעיל את Skill התשלומים, נגדיר מוצר ונבין את תהליך הרכישה וההרשאות מקצה לקצה.
+- מוסיפים שינוי ודוחפים אותו ל־GitHub
+- Vercel מעלה אותו לאוויר אוטומטית
+- בודקים בגרסת Preview לפני שזה מגיע לכולם
+- חוזרים לגרסה קודמת אם משהו נשבר
+
+**בסוף הסרטון:** יודעים לשחרר עדכונים בלי לפחד.
     `,
-    videoUrl: "https://www.youtube.com/watch?v=M7lc1UVf-VE&placeholder=web-payments",
   },
 ] satisfies readonly TutorialVideo[];
 
@@ -56,7 +123,7 @@ export default function WebVideosPage() {
     <VideoGuidePage
       eyebrow="// WEB STARTER"
       title="מדריכי Web"
-      introduction="כל מה שצריך כדי להפוך את תבנית ה־Next.js למוצר שלכם ולהתחיל לבנות."
+      introduction="מהתקנת הכלים ועד אתר באוויר עם דומיין ותשלומים. כדאי לצפות לפי הסדר."
       storageKey="zero-to-app:videos:web:completed"
       videos={videos}
     />
