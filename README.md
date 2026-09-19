@@ -21,11 +21,21 @@ Duplicate Grow notifications do not duplicate purchases or entitlements. Email f
 Copy `.env.example` to `.env.local` and configure all required values. Then apply the database migrations in order and run the app:
 
 ```bash
-node --env-file=.env.local --input-type=module -e 'import { readFileSync } from "node:fs"; import pg from "pg"; const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL }); for (const file of ["db/migrations/001_grow_purchases.sql", "db/migrations/002_github_access.sql", "db/migrations/003_zero_to_app_entitlements.sql", "db/migrations/004_login_email_deliveries.sql"]) await pool.query(readFileSync(file, "utf8")); await pool.end();'
+node --env-file=.env.local --input-type=module -e 'import { readFileSync } from "node:fs"; import pg from "pg"; const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL }); for (const file of ["db/migrations/001_grow_purchases.sql", "db/migrations/002_github_access.sql", "db/migrations/003_zero_to_app_entitlements.sql", "db/migrations/004_login_email_deliveries.sql", "db/migrations/005_feature_requests.sql"]) await pool.query(readFileSync(file, "utf8")); await pool.end();'
 npm run dev
 ```
 
 `ACCESS_WEB_REPO_URL` and `ACCESS_MOBILE_REPO_URL` are optional during development. They are read only on the authorized server page and should point to the actual buyer delivery destinations in production.
+
+## Buyer feedback
+
+Buyers submit feature requests, bug reports and general feedback from `/access`. Submissions are stored in `feature_requests` and nothing notifies on insert, so read them yourself:
+
+```bash
+node --env-file=.env.local --input-type=module -e 'import pg from "pg"; const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL }); const { rows } = await pool.query("SELECT created_at, kind, target, title, body, subject_email, status FROM feature_requests ORDER BY created_at DESC LIMIT 50"); console.table(rows.map((row) => ({ ...row, body: row.body.slice(0, 60) }))); await pool.end();'
+```
+
+Triage in place: `UPDATE feature_requests SET status = 'planned', note = '...', updated_at = now() WHERE id = '...';`. Valid `status` values are `new`, `triaged`, `planned`, `shipped` and `declined`. The endpoint requires an active entitlement and accepts at most five submissions per buyer per hour.
 
 ## GitHub App setup
 

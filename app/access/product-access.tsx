@@ -4,6 +4,7 @@ import { ACCESS_REPOSITORIES } from "@/lib/access/repositories";
 import { BRAND_WORDMARK, SUPPORT_EMAIL } from "@/lib/brand";
 
 import { CopyButton } from "./copy-button";
+import { FeedbackForm } from "./feedback-form";
 import { GitHubAccessCard, type RepositoryAccessView } from "./github-access-card";
 
 // Rendered by app/access/page.tsx only after the session and entitlement checks pass.
@@ -216,6 +217,15 @@ export function ProductAccess({ userName, githubAccess }: { userName: string; gi
             </div>
           </div>
         </div>
+      </section>
+
+      <section aria-labelledby="feedback-heading" className="mx-auto max-w-7xl px-5 pt-20 md:px-8 md:pt-24">
+        <p className="font-mono text-sm font-bold text-[var(--lime)]">{"// FEEDBACK"}</p>
+        <h2 id="feedback-heading" className="mt-4 text-4xl font-black tracking-[-.04em] md:text-6xl">מה חסר לכם בתבנית?</h2>
+        <p className="mt-5 max-w-2xl text-lg leading-8 text-zinc-400">
+          התבניות ממשיכות להתעדכן. ספרו לי מה הייתם רוצים שיתווסף, מה לא עובד כמו שציפיתם, או מה היה מבלבל — זה מה שקובע מה ייכנס בעדכון הבא.
+        </p>
+        <FeedbackForm />
       </section>
 
       <section className="mx-auto max-w-7xl px-5 py-20 md:px-8">

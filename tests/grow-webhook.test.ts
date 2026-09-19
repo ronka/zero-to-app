@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { authorizeAccess } from "../lib/access/authorization";
+import { authorizeAccess, readAccess } from "../lib/access/authorization";
 import { dispatchClaimedAccessEmail } from "../lib/access/dispatch";
 import {
   MAGIC_LINK_GENERIC_RESPONSE,
@@ -337,4 +337,35 @@ test("authorization denies anonymous, unverified, non-buyers, and the wrong prod
   );
   assert.equal((await authorizeAccess(buyer, "another-product", dependencies)).status, "denied");
   assert.equal((await authorizeAccess(buyer, "zero-to-app", dependencies)).status, "granted");
+});
+
+test("readAccess resolves the entitlement without claiming it", async () => {
+  let claims = 0;
+  const findEntitlement = async (_email: string, key: string) =>
+    key === "zero-to-app" ? { id: "entitlement-1" } : null;
+  const buyer = {
+    user: { id: "user-1", email: "buyer@example.com", emailVerified: true },
+  };
+
+  const read = await readAccess(buyer, "zero-to-app", { findEntitlement });
+  assert.equal(read.status, "granted");
+  assert.equal(read.status === "granted" && read.entitlement.id, "entitlement-1");
+  assert.equal(claims, 0);
+
+  // The claiming variant still writes, and a lost claim is still a denial.
+  const granted = await authorizeAccess(buyer, "zero-to-app", {
+    findEntitlement,
+    claim: async () => {
+      claims += 1;
+      return true;
+    },
+  });
+  assert.equal(granted.status, "granted");
+  assert.equal(claims, 1);
+
+  const lost = await authorizeAccess(buyer, "zero-to-app", {
+    findEntitlement,
+    claim: async () => false,
+  });
+  assert.equal(lost.status, "denied");
 });

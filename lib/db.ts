@@ -5,6 +5,7 @@ import type {
   AccessEmailDeliveryKind,
 } from "./access/types";
 import { database } from "./database";
+import type { FeatureRequestInsert } from "./feedback/types";
 import { GROW_PRODUCTS, productForEntitlement, type GrowProcessId } from "./grow/products";
 import type { GrowPurchase, PersistGrowPurchaseResult } from "./grow/webhook";
 
@@ -422,4 +423,31 @@ export async function markGitHubRepositoryGrantFailed(id: string, error: unknown
      WHERE id = $1 AND state = 'provisioning'`,
     [id, message.slice(0, 500)],
   );
+}
+
+export async function insertFeatureRequest(request: FeatureRequestInsert) {
+  await database.query(
+    `INSERT INTO feature_requests (
+       user_id, entitlement_id, subject_email, kind, target, title, body
+     ) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+    [
+      request.userId,
+      request.entitlementId,
+      request.subjectEmail,
+      request.kind,
+      request.target,
+      request.title,
+      request.body,
+    ],
+  );
+}
+
+export async function countRecentFeatureRequests(userId: string) {
+  const result = await database.query<{ count: string }>(
+    `SELECT count(*)::text AS count
+     FROM feature_requests
+     WHERE user_id = $1 AND created_at > now() - interval '1 hour'`,
+    [userId],
+  );
+  return Number(result.rows[0]?.count ?? 0);
 }

@@ -10,12 +10,15 @@ type AccessSession = {
 
 type Entitlement = { id: string } | null;
 
-export async function authorizeAccess(
+/**
+ * Resolves entitlement without writing. Use this for endpoints that only need to
+ * know whether the buyer has access; `authorizeAccess` additionally claims it.
+ */
+export async function readAccess(
   session: AccessSession,
   entitlementKey: string,
   dependencies: {
     findEntitlement: (email: string, key: string) => Promise<Entitlement>;
-    claim: (id: string, userId: string) => Promise<boolean>;
   },
 ) {
   if (!session?.user) return { status: "anonymous" as const };
@@ -26,8 +29,24 @@ export async function authorizeAccess(
     entitlementKey,
   );
   if (!entitlement) return { status: "denied" as const };
-  if (!(await dependencies.claim(entitlement.id, session.user.id))) {
+  return { status: "granted" as const, entitlement: { id: entitlement.id } };
+}
+
+export async function authorizeAccess(
+  session: AccessSession,
+  entitlementKey: string,
+  dependencies: {
+    findEntitlement: (email: string, key: string) => Promise<Entitlement>;
+    claim: (id: string, userId: string) => Promise<boolean>;
+  },
+) {
+  const access = await readAccess(session, entitlementKey, dependencies);
+  if (access.status !== "granted") return access;
+
+  // Non-null: only the "granted" branch is reachable with a session present.
+  const userId = session!.user.id;
+  if (!(await dependencies.claim(access.entitlement.id, userId))) {
     return { status: "denied" as const };
   }
-  return { status: "granted" as const, entitlement: { id: entitlement.id } };
+  return access;
 }
