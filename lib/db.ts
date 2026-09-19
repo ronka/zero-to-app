@@ -5,7 +5,11 @@ import type {
   AccessEmailDeliveryKind,
 } from "./access/types";
 import { database } from "./database";
-import type { FeatureRequestInsert } from "./feedback/types";
+import type {
+  FeatureRequestInsert,
+  FeatureRequestRecord,
+  FeatureRequestStatus,
+} from "./feedback/types";
 import { GROW_PRODUCTS, productForEntitlement, type GrowProcessId } from "./grow/products";
 import type { GrowPurchase, PersistGrowPurchaseResult } from "./grow/webhook";
 
@@ -450,4 +454,58 @@ export async function countRecentFeatureRequests(userId: string) {
     [userId],
   );
   return Number(result.rows[0]?.count ?? 0);
+}
+
+type FeatureRequestRow = {
+  id: string;
+  kind: FeatureRequestRecord["kind"];
+  target: FeatureRequestRecord["target"];
+  title: string;
+  body: string;
+  status: FeatureRequestStatus;
+  note: string | null;
+  subject_email: string;
+  created_at: Date;
+  updated_at: Date;
+};
+
+function featureRequestFromRow(row: FeatureRequestRow): FeatureRequestRecord {
+  return {
+    id: row.id,
+    kind: row.kind,
+    target: row.target,
+    title: row.title,
+    body: row.body,
+    status: row.status,
+    note: row.note,
+    subjectEmail: row.subject_email,
+    createdAt: row.created_at.toISOString(),
+    updatedAt: row.updated_at.toISOString(),
+  };
+}
+
+export async function listFeatureRequests(limit = 200) {
+  const result = await database.query<FeatureRequestRow>(
+    `SELECT id, kind, target, title, body, status, note, subject_email, created_at, updated_at
+     FROM feature_requests
+     ORDER BY created_at DESC
+     LIMIT $1`,
+    [limit],
+  );
+  return result.rows.map(featureRequestFromRow);
+}
+
+export async function updateFeatureRequestStatus(
+  id: string,
+  status: FeatureRequestStatus,
+  note: string | null,
+) {
+  const result = await database.query<FeatureRequestRow>(
+    `UPDATE feature_requests
+     SET status = $2, note = $3, updated_at = now()
+     WHERE id = $1
+     RETURNING id, kind, target, title, body, status, note, subject_email, created_at, updated_at`,
+    [id, status, note],
+  );
+  return result.rows[0] ? featureRequestFromRow(result.rows[0]) : null;
 }
