@@ -50,6 +50,22 @@ function ArrowIcon() {
   );
 }
 
+function DownArrowIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="none">
+      <path d="M12 5v14M6 13l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function InboxIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="none">
+      <path d="M4 13h4l2 3h4l2-3h4M4 13l2.5-7h11L20 13v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 function CommandLine({ command, label }: { command: string; label: string }) {
   return (
     <div className="flex items-center justify-between gap-3 rounded-lg border border-zinc-800 bg-black/40 px-4 py-3 font-mono text-[13px]" dir="ltr">
@@ -71,18 +87,46 @@ type GitHubAccessProps = {
   connectionError: boolean;
 };
 
-export function ProductAccess({ userName, githubAccess }: { userName: string; githubAccess: GitHubAccessProps }) {
+export function ProductAccess({
+  userName,
+  githubAccess,
+  isAdmin = false,
+}: {
+  userName: string;
+  githubAccess: GitHubAccessProps;
+  isAdmin?: boolean;
+}) {
   return (
     <main dir="rtl" className="flex-1 overflow-hidden bg-[var(--background)] text-[var(--foreground)]">
       <header className="border-b border-[var(--line)]">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5 md:px-8">
           <Link href="/" className="flex items-center gap-3 font-mono text-[15px] font-bold tracking-tight text-white" aria-label="Zero to App — דף הבית">
             <Mark />
-            <span dir="ltr">{BRAND_WORDMARK}</span>
+            <span className="whitespace-nowrap" dir="ltr">{BRAND_WORDMARK}</span>
           </Link>
-          <span className="rounded-full border border-[var(--lime)]/40 bg-[rgba(199,255,74,.07)] px-4 py-2 text-sm font-bold text-[var(--lime)]">
-            רכישה פעילה ✓
-          </span>
+          <div className="flex items-center gap-2 sm:gap-3">
+            {isAdmin ? (
+              <Link
+                href="/admin"
+                aria-label="ניהול פניות"
+                className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-[var(--coral)]/50 bg-[rgba(255,104,77,.08)] px-3 py-2 text-sm font-bold text-[var(--coral)] transition hover:border-[var(--coral)] sm:px-4"
+              >
+                <InboxIcon />
+                <span className="hidden sm:inline">ניהול פניות</span>
+              </Link>
+            ) : null}
+            <a
+              href="#feedback"
+              aria-label="שליחת משוב"
+              className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-[var(--line)] px-3 py-2 text-sm font-bold text-zinc-300 transition hover:border-zinc-500 hover:text-white sm:px-4"
+            >
+              <span className="hidden sm:inline">שליחת משוב</span>
+              <DownArrowIcon />
+            </a>
+            <span className="whitespace-nowrap rounded-full border border-[var(--lime)]/40 bg-[rgba(199,255,74,.07)] px-3 py-2 text-sm font-bold text-[var(--lime)] sm:px-4">
+              רכישה פעילה ✓
+            </span>
+          </div>
         </div>
       </header>
 
@@ -239,7 +283,7 @@ export function ProductAccess({ userName, githubAccess }: { userName: string; gi
         </div>
       </section>
 
-      <section aria-labelledby="feedback-heading" className="mx-auto max-w-7xl px-5 pt-20 md:px-8 md:pt-24">
+      <section id="feedback" aria-labelledby="feedback-heading" className="mx-auto max-w-7xl scroll-mt-8 px-5 pt-20 md:px-8 md:pt-24">
         <p className="font-mono text-sm font-bold text-[var(--lime)]">{"// FEEDBACK"}</p>
         <h2 id="feedback-heading" className="mt-4 text-4xl font-black tracking-[-.04em] md:text-6xl">מה חסר לכם בתבנית?</h2>
         <p className="mt-5 max-w-2xl text-lg leading-8 text-zinc-400">

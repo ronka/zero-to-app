@@ -4,6 +4,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { authorizeAccess } from "@/lib/access/authorization";
+import { isAdminSession } from "@/lib/admin/authorization";
 import {
   ACCESS_REPOSITORIES,
   githubAppConfigured,
@@ -77,6 +78,7 @@ export default async function AccessPage({
   return (
     <ProductAccess
       userName={session.user.name}
+      isAdmin={isAdminSession(session)}
       githubAccess={{
         configured: githubOAuthConfigured() && githubAppConfigured(),
         linked,
