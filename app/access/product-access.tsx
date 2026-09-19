@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { ACCESS_REPOSITORIES } from "@/lib/access/repositories";
-import { BRAND_WORDMARK, SUPPORT_EMAIL } from "@/lib/brand";
+import { BRAND_WORDMARK, COMMUNITY_URL, SUPPORT_EMAIL } from "@/lib/brand";
 
 import { CopyButton } from "./copy-button";
 import { FeedbackForm } from "./feedback-form";
@@ -105,6 +105,26 @@ export function ProductAccess({ userName, githubAccess }: { userName: string; gi
       </section>
 
       <section aria-labelledby="repos-heading" className="mx-auto max-w-7xl px-5 py-20 md:px-8 md:py-24">
+        <aside aria-labelledby="community-heading" className="mb-20 overflow-hidden rounded-[28px] border border-[#5865f2]/40 bg-[linear-gradient(135deg,rgba(88,101,242,.18),rgba(109,216,255,.06))] p-7 md:p-10">
+          <div className="flex flex-col gap-7 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="font-mono text-sm font-bold text-[#aeb5ff]">{"// BUILD TOGETHER"}</p>
+              <h2 id="community-heading" className="mt-3 text-3xl font-black tracking-[-.03em] md:text-4xl">קהילת Zero to App מחכה לכם.</h2>
+              <p className="mt-3 max-w-2xl text-base leading-7 text-zinc-300 md:text-lg md:leading-8">
+                מצטרפים ל־Discord כדי לשאול שאלות, לשתף במה שבניתם ולהתקדם יחד עם בונים נוספים.
+              </p>
+            </div>
+            <a
+              href={COMMUNITY_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex min-h-14 shrink-0 items-center justify-center rounded-full bg-[#5865f2] px-7 text-base font-black text-white transition hover:-translate-y-0.5 hover:bg-[#6975f5]"
+            >
+              הצטרפות ל־Discord ↗
+            </a>
+          </div>
+        </aside>
+
         <p className="font-mono text-sm font-bold text-[var(--coral)]">{"// YOUR REPOSITORIES"}</p>
         <h2 id="repos-heading" className="mt-4 text-4xl font-black tracking-[-.04em] md:text-6xl">שני repos. מוכנים לשכפול.</h2>
 

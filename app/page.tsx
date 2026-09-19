@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 
 import { auth } from "@/lib/auth";
+import { COMMUNITY_URL } from "@/lib/brand";
 import { GROW_PAYMENT_URL } from "@/lib/grow/products";
 
 const integrations = [
@@ -112,6 +113,7 @@ export default async function Home() {
               <span className="flex items-center gap-2 text-[var(--lime)]"><CheckIcon /><b className="text-zinc-300">2 repos לבחירה</b></span>
               <span className="flex items-center gap-2 text-[var(--lime)]"><CheckIcon /><b className="text-zinc-300">Setup מונחה AI</b></span>
               <span className="flex items-center gap-2 text-[var(--lime)]"><CheckIcon /><b className="text-zinc-300">קל להרחבה</b></span>
+              <span className="flex items-center gap-2 text-[var(--lime)]"><CheckIcon /><b className="text-zinc-300">קהילת בונים ב־Discord</b></span>
             </div>
           </div>
 
@@ -290,7 +292,9 @@ export default async function Home() {
         <div className="relative mx-auto max-w-5xl px-5 text-center md:px-8">
           <p className="font-mono text-sm font-bold text-[var(--lime)]">{"// READY WHEN YOU ARE"}</p>
           <h2 className="mt-6 text-[clamp(3.5rem,9vw,8rem)] font-black leading-[.83] tracking-[-.065em]">תפסיקו להכין.<br /><span className="text-[var(--lime)]">תתחילו להשיק.</span></h2>
-          <p className="mx-auto mt-8 max-w-2xl text-lg leading-8 text-zinc-400">מקבלים את תשתית ה־Web וה־Mobile המוכנה, עם ה־Skills שמחברים הכול יחד.</p>
+          <p className="mx-auto mt-8 max-w-2xl text-lg leading-8 text-zinc-400">
+            מקבלים את תשתית ה־Web וה־Mobile המוכנה, את ה־Skills שמחברים הכול יחד, וגישה לקהילת הבונים שלנו ב־Discord.
+          </p>
           {isLoggedIn ? (
             <Link href="/access" className="group mt-10 inline-flex min-h-16 items-center justify-center gap-3 rounded-full bg-[var(--lime)] px-9 text-lg font-black text-[var(--ink)] transition hover:-translate-y-1 hover:shadow-[0_8px_0_#617d1e]">
               לגישה שלי
@@ -307,7 +311,12 @@ export default async function Home() {
                   כבר רכשתם? התחברו
                 </Link>
               </div>
-              <p className="mt-5 text-sm text-zinc-500">התשלום מתבצע באופן מאובטח דרך grow.business.</p>
+              <p className="mt-5 text-sm text-zinc-500">
+                התשלום מתבצע באופן מאובטח דרך grow.business. הרכישה כוללת גם{" "}
+                <a href={COMMUNITY_URL} target="_blank" rel="noreferrer" className="font-bold text-zinc-300 underline decoration-zinc-600 underline-offset-4 transition hover:text-[var(--lime)]">
+                  חברות בקהילת ה־Discord
+                </a>.
+              </p>
             </>
           )}
         </div>
